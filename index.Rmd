@@ -1,0 +1,22 @@
+--- 
+title: "Análisis de series temporales: Ausentismo laboral"
+author: "Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+description: "Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI"
+---
+
+
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```

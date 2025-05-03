@@ -1,0 +1,13 @@
+`r if (knitr:::is_html_output()) '
+# References {-}
+'`
+
+[1] Mowday RT, Porter LW, Steers RM (2013) Employee organization linkages: the psychology of commitment, absenteeism, and turnover. Academic press, New York
+
+[2] De Stobbeleir KE, De Clippeleer I, Caniëls MC, Goedertier F, Deprez J, De Vos A, Buyens D (2018) The inside effects of a strong external employer brand: how external perceptions can influ ence organizational absenteeism rates. Int J Hum Resour Manag 29:2106–2136.
+
+[3] Gonzalez BD, Grandner MA, Caminiti CB, Hui SA (2018) Cancer survivors in the workplace: sleep disturbance mediates the impact of cancer on healthcare expenditures and work absenteeism. Support Care Cancer 26:4049–4055.
+
+[4] Kocakulah, M. C., Kelley, A. G., Mitchell, K. M., & Ruggieri, M. P. (2016). Absenteeism problems and costs: causes, effects and cures. The International Business & Economics Research Journal (Online), 15(3), 89.
+
+[5] D. Dua and C. Graff, "Absenteeism at work Data Set," UCI Machine Learning Repository, 2019. [Online]. Available: https://archive.ics.uci.edu/ml/datasets/Absenteeism+at+work
