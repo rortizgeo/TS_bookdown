@@ -220,11 +220,11 @@ Cualqier serie se puede descomponer en su parte estacional, de tendencia y resid
 
 En un modelo aditivo, la serie temporal se descompone en:
 
-    Tendencia (Trend): Refleja la dirección general del ausentismo a largo plazo (ej.: aumento o disminución progresiva).
+- Tendencia (Trend): Refleja la dirección general del ausentismo a largo plazo (ej.: aumento o disminución progresiva).
 
-    Estacionalidad (Seasonality): Patrones repetitivos cada año (ej.: picos en invierno por enfermedades o en festivos).
+- Estacionalidad (Seasonality): Patrones repetitivos cada año (ej.: picos en invierno por enfermedades o en festivos).
 
-    Residuales (Residual): Variabilidad no explicada por los componentes anteriores (eventos aleatorios o errores).
+- Residuales (Residual): Variabilidad no explicada por los componentes anteriores (eventos aleatorios o errores).
 
 
 Para aplicar una descomposición con base en día de la semana, teniendo en cuenta la estructura del dataset y que se cuenta con datos para un año organizados por día del mes y día de la semana se siguen estos pasos.

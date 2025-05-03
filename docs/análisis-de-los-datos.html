@@ -185,20 +185,34 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-3"><a href="análisis-de-los-datos.html#cb1-3" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="análisis-de-los-datos.html#cb1-4" tabindex="-1"></a><span class="co"># Ver las primeras filas</span></span>
 <span id="cb1-5"><a href="análisis-de-los-datos.html#cb1-5" tabindex="-1"></a><span class="fu">head</span>(datos)</span></code></pre></div>
-<pre><code>##   ID Reason.for.absence Month.of.absence Day.of.the.week Seasons Transportation.expense Distance.from.Residence.to.Work Service.time Age
-## 1 11                 26                7               3       1                    289                              36           13  33
-## 2 36                  0                7               3       1                    118                              13           18  50
-## 3  3                 23                7               4       1                    179                              51           18  38
-## 4  7                  7                7               5       1                    279                               5           14  39
-## 5 11                 23                7               5       1                    289                              36           13  33
-## 6  3                 23                7               6       1                    179                              51           18  38
-##   Work.load.Average.day Hit.target Disciplinary.failure Education Son Social.drinker Social.smoker Pet Weight Height Body.mass.index
-## 1               239.554         97                    0         1   2              1             0   1     90    172              30
-## 2               239.554         97                    1         1   1              1             0   0     98    178              31
-## 3               239.554         97                    0         1   0              1             0   0     89    170              31
-## 4               239.554         97                    0         1   2              1             1   0     68    168              24
-## 5               239.554         97                    0         1   2              1             0   1     90    172              30
-## 6               239.554         97                    0         1   0              1             0   0     89    170              31
+<pre><code>##   ID Reason.for.absence Month.of.absence Day.of.the.week Seasons
+## 1 11                 26                7               3       1
+## 2 36                  0                7               3       1
+## 3  3                 23                7               4       1
+## 4  7                  7                7               5       1
+## 5 11                 23                7               5       1
+## 6  3                 23                7               6       1
+##   Transportation.expense Distance.from.Residence.to.Work Service.time Age
+## 1                    289                              36           13  33
+## 2                    118                              13           18  50
+## 3                    179                              51           18  38
+## 4                    279                               5           14  39
+## 5                    289                              36           13  33
+## 6                    179                              51           18  38
+##   Work.load.Average.day Hit.target Disciplinary.failure Education Son
+## 1               239.554         97                    0         1   2
+## 2               239.554         97                    1         1   1
+## 3               239.554         97                    0         1   0
+## 4               239.554         97                    0         1   2
+## 5               239.554         97                    0         1   2
+## 6               239.554         97                    0         1   0
+##   Social.drinker Social.smoker Pet Weight Height Body.mass.index
+## 1              1             0   1     90    172              30
+## 2              1             0   0     98    178              31
+## 3              1             0   0     89    170              31
+## 4              1             1   0     68    168              24
+## 5              1             0   1     90    172              30
+## 6              1             0   0     89    170              31
 ##   Absenteeism.time.in.hours
 ## 1                         4
 ## 2                         0
@@ -235,7 +249,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-25"><a href="análisis-de-los-datos.html#cb3-25" tabindex="-1"></a></span>
 <span id="cb3-26"><a href="análisis-de-los-datos.html#cb3-26" tabindex="-1"></a><span class="co"># Verificar</span></span>
 <span id="cb3-27"><a href="análisis-de-los-datos.html#cb3-27" tabindex="-1"></a><span class="fu">head</span>(datos<span class="sc">$</span>Fecha)</span></code></pre></div>
-<pre><code>## [1] &quot;2007-07-17&quot; &quot;2007-07-17&quot; &quot;2007-07-11&quot; &quot;2007-07-12&quot; &quot;2007-07-12&quot; &quot;2007-07-20&quot;</code></pre>
+<pre><code>## [1] &quot;2007-07-17&quot; &quot;2007-07-17&quot; &quot;2007-07-11&quot; &quot;2007-07-12&quot; &quot;2007-07-12&quot;
+## [6] &quot;2007-07-20&quot;</code></pre>
 <div id="media-movil" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Media Movil<a href="análisis-de-los-datos.html#media-movil" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>El ausentismo laboral día a día puede tener mucha variabilidad, pues algunos días hay cero horas y otros días hay ausencias largas. La media móvil reduce las fluctuaciones diarias y muestra una tendencia más limpia. En este caso se generó un gráfico que muestra en rojo la variabilidad real y en azul la media móvil.</p>
@@ -275,61 +290,61 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">2.4</span> Descomposición de la serie temporal<a href="análisis-de-los-datos.html#descomposición-de-la-serie-temporal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Cualqier serie se puede descomponer en su parte estacional, de tendencia y residual. Exiten dos alternativas, una descomposición por adición y multiplicativa. Para ello usaremos la función descompose.</p>
 <p>En un modelo aditivo, la serie temporal se descompone en:</p>
-<pre><code>Tendencia (Trend): Refleja la dirección general del ausentismo a largo plazo (ej.: aumento o disminución progresiva).
-
-Estacionalidad (Seasonality): Patrones repetitivos cada año (ej.: picos en invierno por enfermedades o en festivos).
-
-Residuales (Residual): Variabilidad no explicada por los componentes anteriores (eventos aleatorios o errores).</code></pre>
+<ul>
+<li><p>Tendencia (Trend): Refleja la dirección general del ausentismo a largo plazo (ej.: aumento o disminución progresiva).</p></li>
+<li><p>Estacionalidad (Seasonality): Patrones repetitivos cada año (ej.: picos en invierno por enfermedades o en festivos).</p></li>
+<li><p>Residuales (Residual): Variabilidad no explicada por los componentes anteriores (eventos aleatorios o errores).</p></li>
+</ul>
 <p>Para aplicar una descomposición con base en día de la semana, teniendo en cuenta la estructura del dataset y que se cuenta con datos para un año organizados por día del mes y día de la semana se siguen estos pasos.</p>
 <ol style="list-style-type: decimal">
 <li>Se crea una serie temporal agregada por día de la semana y se asegura que haya varias semanas.</li>
 </ol>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="análisis-de-los-datos.html#cb13-1" tabindex="-1"></a><span class="co"># Agrupar por fecha y sumar las horas de ausencia (puede haber varias por día)</span></span>
-<span id="cb13-2"><a href="análisis-de-los-datos.html#cb13-2" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
-<span id="cb13-3"><a href="análisis-de-los-datos.html#cb13-3" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Fecha)) <span class="sc">%&gt;%</span></span>
-<span id="cb13-4"><a href="análisis-de-los-datos.html#cb13-4" tabindex="-1"></a>  <span class="fu">group_by</span>(Fecha) <span class="sc">%&gt;%</span></span>
-<span id="cb13-5"><a href="análisis-de-los-datos.html#cb13-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Horas =</span> <span class="fu">sum</span>(Absenteeism.time.in.hours, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb13-6"><a href="análisis-de-los-datos.html#cb13-6" tabindex="-1"></a>  <span class="fu">arrange</span>(Fecha)</span>
-<span id="cb13-7"><a href="análisis-de-los-datos.html#cb13-7" tabindex="-1"></a></span>
-<span id="cb13-8"><a href="análisis-de-los-datos.html#cb13-8" tabindex="-1"></a><span class="co"># Rellenar fechas faltantes (por si hay días sin datos)</span></span>
-<span id="cb13-9"><a href="análisis-de-los-datos.html#cb13-9" tabindex="-1"></a>todas_las_fechas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb13-10"><a href="análisis-de-los-datos.html#cb13-10" tabindex="-1"></a>  <span class="at">Fecha =</span> <span class="fu">seq.Date</span>(<span class="fu">min</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="fu">max</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
-<span id="cb13-11"><a href="análisis-de-los-datos.html#cb13-11" tabindex="-1"></a>)</span>
-<span id="cb13-12"><a href="análisis-de-los-datos.html#cb13-12" tabindex="-1"></a></span>
-<span id="cb13-13"><a href="análisis-de-los-datos.html#cb13-13" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> todas_las_fechas <span class="sc">%&gt;%</span></span>
-<span id="cb13-14"><a href="análisis-de-los-datos.html#cb13-14" tabindex="-1"></a>  <span class="fu">left_join</span>(serie_diaria, <span class="at">by =</span> <span class="st">&quot;Fecha&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb13-15"><a href="análisis-de-los-datos.html#cb13-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Horas =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Horas), <span class="dv">0</span>, Horas))</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="análisis-de-los-datos.html#cb12-1" tabindex="-1"></a><span class="co"># Agrupar por fecha y sumar las horas de ausencia (puede haber varias por día)</span></span>
+<span id="cb12-2"><a href="análisis-de-los-datos.html#cb12-2" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="análisis-de-los-datos.html#cb12-3" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Fecha)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="análisis-de-los-datos.html#cb12-4" tabindex="-1"></a>  <span class="fu">group_by</span>(Fecha) <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="análisis-de-los-datos.html#cb12-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Horas =</span> <span class="fu">sum</span>(Absenteeism.time.in.hours, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="análisis-de-los-datos.html#cb12-6" tabindex="-1"></a>  <span class="fu">arrange</span>(Fecha)</span>
+<span id="cb12-7"><a href="análisis-de-los-datos.html#cb12-7" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="análisis-de-los-datos.html#cb12-8" tabindex="-1"></a><span class="co"># Rellenar fechas faltantes (por si hay días sin datos)</span></span>
+<span id="cb12-9"><a href="análisis-de-los-datos.html#cb12-9" tabindex="-1"></a>todas_las_fechas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-10"><a href="análisis-de-los-datos.html#cb12-10" tabindex="-1"></a>  <span class="at">Fecha =</span> <span class="fu">seq.Date</span>(<span class="fu">min</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="fu">max</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
+<span id="cb12-11"><a href="análisis-de-los-datos.html#cb12-11" tabindex="-1"></a>)</span>
+<span id="cb12-12"><a href="análisis-de-los-datos.html#cb12-12" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="análisis-de-los-datos.html#cb12-13" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> todas_las_fechas <span class="sc">%&gt;%</span></span>
+<span id="cb12-14"><a href="análisis-de-los-datos.html#cb12-14" tabindex="-1"></a>  <span class="fu">left_join</span>(serie_diaria, <span class="at">by =</span> <span class="st">&quot;Fecha&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-15"><a href="análisis-de-los-datos.html#cb12-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Horas =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Horas), <span class="dv">0</span>, Horas))</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Se usa ts() especificando frequency = 7 (para periodicidad semanal).</li>
 </ol>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="análisis-de-los-datos.html#cb14-1" tabindex="-1"></a><span class="co"># Crear la serie temporal con frecuencia semanal (7 días)</span></span>
-<span id="cb14-2"><a href="análisis-de-los-datos.html#cb14-2" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">ts</span>(serie_diaria<span class="sc">$</span>Horas, <span class="at">frequency =</span> <span class="dv">7</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="análisis-de-los-datos.html#cb13-1" tabindex="-1"></a><span class="co"># Crear la serie temporal con frecuencia semanal (7 días)</span></span>
+<span id="cb13-2"><a href="análisis-de-los-datos.html#cb13-2" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">ts</span>(serie_diaria<span class="sc">$</span>Horas, <span class="at">frequency =</span> <span class="dv">7</span>)</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Aplicar la función decompose() o stl() sobre la serie. Por ultimo se realiza el plot del gráfico.</li>
 </ol>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="análisis-de-los-datos.html#cb15-1" tabindex="-1"></a><span class="co"># Descomposición aditiva</span></span>
-<span id="cb15-2"><a href="análisis-de-los-datos.html#cb15-2" tabindex="-1"></a>descomp <span class="ot">&lt;-</span> <span class="fu">decompose</span>(ts_diaria, <span class="at">type =</span> <span class="st">&quot;additive&quot;</span>)</span>
-<span id="cb15-3"><a href="análisis-de-los-datos.html#cb15-3" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="análisis-de-los-datos.html#cb15-4" tabindex="-1"></a><span class="co"># Graficar resultado</span></span>
-<span id="cb15-5"><a href="análisis-de-los-datos.html#cb15-5" tabindex="-1"></a><span class="fu">plot</span>(descomp)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="análisis-de-los-datos.html#cb14-1" tabindex="-1"></a><span class="co"># Descomposición aditiva</span></span>
+<span id="cb14-2"><a href="análisis-de-los-datos.html#cb14-2" tabindex="-1"></a>descomp <span class="ot">&lt;-</span> <span class="fu">decompose</span>(ts_diaria, <span class="at">type =</span> <span class="st">&quot;additive&quot;</span>)</span>
+<span id="cb14-3"><a href="análisis-de-los-datos.html#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="análisis-de-los-datos.html#cb14-4" tabindex="-1"></a><span class="co"># Graficar resultado</span></span>
+<span id="cb14-5"><a href="análisis-de-los-datos.html#cb14-5" tabindex="-1"></a><span class="fu">plot</span>(descomp)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="estacionariedad" class="section level2 hasAnchor" number="2.5">
 <h2><span class="header-section-number">2.5</span> Estacionariedad<a href="análisis-de-los-datos.html#estacionariedad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Establece la estabilidad de la media y la covarianza en la serie de tiempo. Diferente a la estacionalidad en la que se observa el periodo o frecuencia en el que se repite la serie.</p>
 <p>Para ello primero procedemos a hacer una visualización de la serie para ver si hay tendencias.</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="análisis-de-los-datos.html#cb16-1" tabindex="-1"></a>serie_diaria <span class="sc">%&gt;%</span></span>
-<span id="cb16-2"><a href="análisis-de-los-datos.html#cb16-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Fecha, <span class="at">y =</span> Horas)) <span class="sc">+</span></span>
-<span id="cb16-3"><a href="análisis-de-los-datos.html#cb16-3" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;steelblue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-4"><a href="análisis-de-los-datos.html#cb16-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Serie temporal de horas de ausentismo&quot;</span>,</span>
-<span id="cb16-5"><a href="análisis-de-los-datos.html#cb16-5" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Horas de Ausencia&quot;</span>) <span class="sc">+</span></span>
-<span id="cb16-6"><a href="análisis-de-los-datos.html#cb16-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="análisis-de-los-datos.html#cb15-1" tabindex="-1"></a>serie_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="análisis-de-los-datos.html#cb15-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Fecha, <span class="at">y =</span> Horas)) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="análisis-de-los-datos.html#cb15-3" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;steelblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="análisis-de-los-datos.html#cb15-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Serie temporal de horas de ausentismo&quot;</span>,</span>
+<span id="cb15-5"><a href="análisis-de-los-datos.html#cb15-5" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Horas de Ausencia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="análisis-de-los-datos.html#cb15-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>Luego aplicamos la prueba ADF (Augmented Dickey-Fuller)</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="análisis-de-los-datos.html#cb17-1" tabindex="-1"></a><span class="co"># Prueba de Dickey-Fuller aumentada (ADF)</span></span>
-<span id="cb17-2"><a href="análisis-de-los-datos.html#cb17-2" tabindex="-1"></a>adf_test <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(ts_diaria)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="análisis-de-los-datos.html#cb16-1" tabindex="-1"></a><span class="co"># Prueba de Dickey-Fuller aumentada (ADF)</span></span>
+<span id="cb16-2"><a href="análisis-de-los-datos.html#cb16-2" tabindex="-1"></a>adf_test <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(ts_diaria)</span></code></pre></div>
 <pre><code>## Warning in adf.test(ts_diaria): p-value smaller than printed p-value</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="análisis-de-los-datos.html#cb19-1" tabindex="-1"></a><span class="fu">print</span>(adf_test)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="análisis-de-los-datos.html#cb18-1" tabindex="-1"></a><span class="fu">print</span>(adf_test)</span></code></pre></div>
 <pre><code>## 
 ##  Augmented Dickey-Fuller Test
 ## 
@@ -342,11 +357,11 @@ Residuales (Residual): Variabilidad no explicada por los componentes anteriores 
 <h2><span class="header-section-number">2.6</span> Diferenciación.<a href="análisis-de-los-datos.html#diferenciación." class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Dado que el resultado de la prueba de Dickey-Fuller aumentada (ADF) arrojó un p-valor de 0.01, podemos rechazar la hipótesis nula de que la serie tiene una raíz unitaria, lo que indica que la serie es estacionaria. En consecuencia, no es necesario aplicar técnicas de diferenciación, ya que la serie no presenta una tendencia sistemática ni una varianza creciente que requiera ser eliminada para su análisis. Esta conclusión también puede ser respaldada visualmente mediante la gráfica de la serie y la función de autocorrelación (ACF), que muestran un comportamiento estable en el tiempo y una rápida disminución de las autocorrelaciones</p>
 
-<p>En construcción</p>
+<p>.</p>
 
-<p>En construcción</p>
+<p>.</p>
 
-<p>En construcción</p>
+<p>.</p>
 
 </div>
 </div>
