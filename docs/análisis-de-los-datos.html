@@ -52,6 +52,10 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 
 
 <style type="text/css">
@@ -183,72 +187,528 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="análisis-de-los-datos.html#cb1-1" tabindex="-1"></a><span class="co"># Cargar datos desde un archivo CSV</span></span>
 <span id="cb1-2"><a href="análisis-de-los-datos.html#cb1-2" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/ricardoortiz/Desktop/Maestria_CD/Series_Tiempo/bookdown-TS/Absenteeism_at_work.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>)</span>
 <span id="cb1-3"><a href="análisis-de-los-datos.html#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="análisis-de-los-datos.html#cb1-4" tabindex="-1"></a><span class="co"># Ver las primeras filas</span></span>
-<span id="cb1-5"><a href="análisis-de-los-datos.html#cb1-5" tabindex="-1"></a><span class="fu">head</span>(datos)</span></code></pre></div>
-<pre><code>##   ID Reason.for.absence Month.of.absence Day.of.the.week Seasons
-## 1 11                 26                7               3       1
-## 2 36                  0                7               3       1
-## 3  3                 23                7               4       1
-## 4  7                  7                7               5       1
-## 5 11                 23                7               5       1
-## 6  3                 23                7               6       1
-##   Transportation.expense Distance.from.Residence.to.Work Service.time Age
-## 1                    289                              36           13  33
-## 2                    118                              13           18  50
-## 3                    179                              51           18  38
-## 4                    279                               5           14  39
-## 5                    289                              36           13  33
-## 6                    179                              51           18  38
-##   Work.load.Average.day Hit.target Disciplinary.failure Education Son
-## 1               239.554         97                    0         1   2
-## 2               239.554         97                    1         1   1
-## 3               239.554         97                    0         1   0
-## 4               239.554         97                    0         1   2
-## 5               239.554         97                    0         1   2
-## 6               239.554         97                    0         1   0
-##   Social.drinker Social.smoker Pet Weight Height Body.mass.index
-## 1              1             0   1     90    172              30
-## 2              1             0   0     98    178              31
-## 3              1             0   0     89    170              31
-## 4              1             1   0     68    168              24
-## 5              1             0   1     90    172              30
-## 6              1             0   0     89    170              31
-##   Absenteeism.time.in.hours
-## 1                         4
-## 2                         0
-## 3                         2
-## 4                         4
-## 5                         2
-## 6                         2</code></pre>
+<span id="cb1-4"><a href="análisis-de-los-datos.html#cb1-4" tabindex="-1"></a><span class="co"># Mostrar primeras filas con formato profesional</span></span>
+<span id="cb1-5"><a href="análisis-de-los-datos.html#cb1-5" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb1-6"><a href="análisis-de-los-datos.html#cb1-6" tabindex="-1"></a>  <span class="fu">head</span>(datos),</span>
+<span id="cb1-7"><a href="análisis-de-los-datos.html#cb1-7" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">&quot;html&quot;</span>,</span>
+<span id="cb1-8"><a href="análisis-de-los-datos.html#cb1-8" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Tabla 1: Vista preliminar del ausentismo laboral&quot;</span>,</span>
+<span id="cb1-9"><a href="análisis-de-los-datos.html#cb1-9" tabindex="-1"></a>  <span class="at">align =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;l&quot;</span>, <span class="dv">2</span>), <span class="fu">rep</span>(<span class="st">&quot;c&quot;</span>, <span class="fu">ncol</span>(datos)<span class="sc">-</span><span class="dv">2</span>)),  <span class="co"># Primeras 2 columnas a la izquierda</span></span>
+<span id="cb1-10"><a href="análisis-de-los-datos.html#cb1-10" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">gsub</span>(<span class="st">&quot;_&quot;</span>, <span class="st">&quot; &quot;</span>, <span class="fu">colnames</span>(datos))  <span class="co"># Reemplazar _ por espacios</span></span>
+<span id="cb1-11"><a href="análisis-de-los-datos.html#cb1-11" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-12"><a href="análisis-de-los-datos.html#cb1-12" tabindex="-1"></a>  <span class="fu">kable_styling</span>(</span>
+<span id="cb1-13"><a href="análisis-de-los-datos.html#cb1-13" tabindex="-1"></a>    <span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>),</span>
+<span id="cb1-14"><a href="análisis-de-los-datos.html#cb1-14" tabindex="-1"></a>    <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-15"><a href="análisis-de-los-datos.html#cb1-15" tabindex="-1"></a>    <span class="at">font_size =</span> <span class="dv">13</span>,</span>
+<span id="cb1-16"><a href="análisis-de-los-datos.html#cb1-16" tabindex="-1"></a>    <span class="at">position =</span> <span class="st">&quot;center&quot;</span></span>
+<span id="cb1-17"><a href="análisis-de-los-datos.html#cb1-17" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb1-18"><a href="análisis-de-los-datos.html#cb1-18" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">background =</span> <span class="st">&quot;#2c3e50&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-19"><a href="análisis-de-los-datos.html#cb1-19" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">1</span>, <span class="at">width =</span> <span class="st">&quot;8em&quot;</span>) <span class="sc">%&gt;%</span>  <span class="co"># Ancho fijo para primera columna</span></span>
+<span id="cb1-20"><a href="análisis-de-los-datos.html#cb1-20" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">2</span>, <span class="at">width =</span> <span class="st">&quot;6em&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-21"><a href="análisis-de-los-datos.html#cb1-21" tabindex="-1"></a>  <span class="fu">footnote</span>(</span>
+<span id="cb1-22"><a href="análisis-de-los-datos.html#cb1-22" tabindex="-1"></a>    <span class="at">general =</span> <span class="st">&quot;Datos de absentismo laboral en una empresa&quot;</span>,</span>
+<span id="cb1-23"><a href="análisis-de-los-datos.html#cb1-23" tabindex="-1"></a>    <span class="at">general_title =</span> <span class="st">&quot;Fuente:&quot;</span>,</span>
+<span id="cb1-24"><a href="análisis-de-los-datos.html#cb1-24" tabindex="-1"></a>    <span class="at">footnote_as_chunk =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-25"><a href="análisis-de-los-datos.html#cb1-25" tabindex="-1"></a>  )</span></code></pre></div>
+<table class="table table-striped table-hover" style="font-size: 13px; width: auto !important; margin-left: auto; margin-right: auto;border-bottom: 0;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-2">Table 2.1: </span>Tabla 1: Vista preliminar del ausentismo laboral
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+ID
+</th>
+<th style="text-align:left;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Reason.for.absence
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Month.of.absence
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Day.of.the.week
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Seasons
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Transportation.expense
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Distance.from.Residence.to.Work
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Service.time
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Age
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Work.load.Average.day
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Hit.target
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Disciplinary.failure
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Education
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Son
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Social.drinker
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Social.smoker
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Pet
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Weight
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Height
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Body.mass.index
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: rgba(44, 62, 80, 255) !important;">
+Absenteeism.time.in.hours
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 8em; ">
+11
+</td>
+<td style="text-align:left;width: 6em; ">
+26
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+289
+</td>
+<td style="text-align:center;">
+36
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+33
+</td>
+<td style="text-align:center;">
+239.554
+</td>
+<td style="text-align:center;">
+97
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+172
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 8em; ">
+36
+</td>
+<td style="text-align:left;width: 6em; ">
+0
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+118
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+239.554
+</td>
+<td style="text-align:center;">
+97
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+98
+</td>
+<td style="text-align:center;">
+178
+</td>
+<td style="text-align:center;">
+31
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 8em; ">
+3
+</td>
+<td style="text-align:left;width: 6em; ">
+23
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+179
+</td>
+<td style="text-align:center;">
+51
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+38
+</td>
+<td style="text-align:center;">
+239.554
+</td>
+<td style="text-align:center;">
+97
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+89
+</td>
+<td style="text-align:center;">
+170
+</td>
+<td style="text-align:center;">
+31
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 8em; ">
+7
+</td>
+<td style="text-align:left;width: 6em; ">
+7
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+279
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+14
+</td>
+<td style="text-align:center;">
+39
+</td>
+<td style="text-align:center;">
+239.554
+</td>
+<td style="text-align:center;">
+97
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+68
+</td>
+<td style="text-align:center;">
+168
+</td>
+<td style="text-align:center;">
+24
+</td>
+<td style="text-align:center;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 8em; ">
+11
+</td>
+<td style="text-align:left;width: 6em; ">
+23
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+289
+</td>
+<td style="text-align:center;">
+36
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+33
+</td>
+<td style="text-align:center;">
+239.554
+</td>
+<td style="text-align:center;">
+97
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+172
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 8em; ">
+3
+</td>
+<td style="text-align:left;width: 6em; ">
+23
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+179
+</td>
+<td style="text-align:center;">
+51
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+38
+</td>
+<td style="text-align:center;">
+239.554
+</td>
+<td style="text-align:center;">
+97
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+89
+</td>
+<td style="text-align:center;">
+170
+</td>
+<td style="text-align:center;">
+31
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; " colspan="100%">
+<span style="font-style: italic;">Fuente:</span> <sup></sup> Datos de absentismo laboral en una empresa
+</td>
+</tr>
+</tfoot>
+</table>
 <p>Al revisar los datos se identifica que la variable de interés que puede ser apropiada para hacer el análisis es el tiempo de ausentismo en horas, disponible en la variable <em>Absenteeism.time.in.hours</em>. La cuál es la variable objetivo del dataset según la descripción del mismo.</p>
 <p>El dataset no incluye una fecha específica por lo que es necesario construirla a partir de variables tales como Month.of.absence y Day.of.the.weeek. Para ello, usamos el siguiente código.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="análisis-de-los-datos.html#cb3-1" tabindex="-1"></a><span class="co"># Crear fechas de 2007 con día de la semana donde 1 = Domingo, ..., 7 = Sábado</span></span>
-<span id="cb3-2"><a href="análisis-de-los-datos.html#cb3-2" tabindex="-1"></a>fechas_2007 <span class="ot">&lt;-</span> <span class="fu">seq.Date</span>(<span class="at">from =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-01-01&quot;</span>), <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-12-31&quot;</span>), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
-<span id="cb3-3"><a href="análisis-de-los-datos.html#cb3-3" tabindex="-1"></a>dias_semana_2007 <span class="ot">&lt;-</span> <span class="fu">wday</span>(fechas_2007, <span class="at">week_start =</span> <span class="dv">7</span>)  <span class="co"># 1 = Domingo, 2 = Lunes, ..., 7 = Sábado</span></span>
-<span id="cb3-4"><a href="análisis-de-los-datos.html#cb3-4" tabindex="-1"></a>dias_semana_2007_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Fecha =</span> fechas_2007, <span class="at">Dia_de_la_semana =</span> dias_semana_2007)</span>
-<span id="cb3-5"><a href="análisis-de-los-datos.html#cb3-5" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="análisis-de-los-datos.html#cb3-6" tabindex="-1"></a><span class="co"># Crear la columna &#39;Fecha&#39; en el dataframe &#39;datos&#39;</span></span>
-<span id="cb3-7"><a href="análisis-de-los-datos.html#cb3-7" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
-<span id="cb3-8"><a href="análisis-de-los-datos.html#cb3-8" tabindex="-1"></a>datos <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
-<span id="cb3-9"><a href="análisis-de-los-datos.html#cb3-9" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Month.of.absence) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(Day.of.the.week)) <span class="sc">%&gt;%</span></span>
-<span id="cb3-10"><a href="análisis-de-los-datos.html#cb3-10" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb3-11"><a href="análisis-de-los-datos.html#cb3-11" tabindex="-1"></a>    <span class="at">Fecha =</span> <span class="fu">as.Date</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.), <span class="cf">function</span>(i) {</span>
-<span id="cb3-12"><a href="análisis-de-los-datos.html#cb3-12" tabindex="-1"></a>      mes <span class="ot">&lt;-</span> Month.of.absence[i]</span>
-<span id="cb3-13"><a href="análisis-de-los-datos.html#cb3-13" tabindex="-1"></a>      dia_semana <span class="ot">&lt;-</span> Day.of.the.week[i]</span>
-<span id="cb3-14"><a href="análisis-de-los-datos.html#cb3-14" tabindex="-1"></a>      </span>
-<span id="cb3-15"><a href="análisis-de-los-datos.html#cb3-15" tabindex="-1"></a>      posibles_fechas <span class="ot">&lt;-</span> dias_semana_2007_df <span class="sc">%&gt;%</span></span>
-<span id="cb3-16"><a href="análisis-de-los-datos.html#cb3-16" tabindex="-1"></a>        <span class="fu">filter</span>(<span class="fu">month</span>(Fecha) <span class="sc">==</span> mes <span class="sc">&amp;</span> Dia_de_la_semana <span class="sc">==</span> dia_semana)</span>
-<span id="cb3-17"><a href="análisis-de-los-datos.html#cb3-17" tabindex="-1"></a>      </span>
-<span id="cb3-18"><a href="análisis-de-los-datos.html#cb3-18" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(posibles_fechas) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb3-19"><a href="análisis-de-los-datos.html#cb3-19" tabindex="-1"></a>        <span class="fu">sample</span>(posibles_fechas<span class="sc">$</span>Fecha, <span class="dv">1</span>)</span>
-<span id="cb3-20"><a href="análisis-de-los-datos.html#cb3-20" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb3-21"><a href="análisis-de-los-datos.html#cb3-21" tabindex="-1"></a>        <span class="cn">NA</span></span>
-<span id="cb3-22"><a href="análisis-de-los-datos.html#cb3-22" tabindex="-1"></a>      }</span>
-<span id="cb3-23"><a href="análisis-de-los-datos.html#cb3-23" tabindex="-1"></a>    }), <span class="at">origin =</span> <span class="st">&quot;1970-01-01&quot;</span>)</span>
-<span id="cb3-24"><a href="análisis-de-los-datos.html#cb3-24" tabindex="-1"></a>  )</span>
-<span id="cb3-25"><a href="análisis-de-los-datos.html#cb3-25" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="análisis-de-los-datos.html#cb3-26" tabindex="-1"></a><span class="co"># Verificar</span></span>
-<span id="cb3-27"><a href="análisis-de-los-datos.html#cb3-27" tabindex="-1"></a><span class="fu">head</span>(datos<span class="sc">$</span>Fecha)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="análisis-de-los-datos.html#cb2-1" tabindex="-1"></a><span class="co"># Crear fechas de 2007 con día de la semana donde 1 = Domingo, ..., 7 = Sábado</span></span>
+<span id="cb2-2"><a href="análisis-de-los-datos.html#cb2-2" tabindex="-1"></a>fechas_2007 <span class="ot">&lt;-</span> <span class="fu">seq.Date</span>(<span class="at">from =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-01-01&quot;</span>), <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-12-31&quot;</span>), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
+<span id="cb2-3"><a href="análisis-de-los-datos.html#cb2-3" tabindex="-1"></a>dias_semana_2007 <span class="ot">&lt;-</span> <span class="fu">wday</span>(fechas_2007, <span class="at">week_start =</span> <span class="dv">7</span>)  <span class="co"># 1 = Domingo, 2 = Lunes, ..., 7 = Sábado</span></span>
+<span id="cb2-4"><a href="análisis-de-los-datos.html#cb2-4" tabindex="-1"></a>dias_semana_2007_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Fecha =</span> fechas_2007, <span class="at">Dia_de_la_semana =</span> dias_semana_2007)</span>
+<span id="cb2-5"><a href="análisis-de-los-datos.html#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="análisis-de-los-datos.html#cb2-6" tabindex="-1"></a><span class="co"># Crear la columna &#39;Fecha&#39; en el dataframe &#39;datos&#39;</span></span>
+<span id="cb2-7"><a href="análisis-de-los-datos.html#cb2-7" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb2-8"><a href="análisis-de-los-datos.html#cb2-8" tabindex="-1"></a>datos <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
+<span id="cb2-9"><a href="análisis-de-los-datos.html#cb2-9" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Month.of.absence) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(Day.of.the.week)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-10"><a href="análisis-de-los-datos.html#cb2-10" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-11"><a href="análisis-de-los-datos.html#cb2-11" tabindex="-1"></a>    <span class="at">Fecha =</span> <span class="fu">as.Date</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.), <span class="cf">function</span>(i) {</span>
+<span id="cb2-12"><a href="análisis-de-los-datos.html#cb2-12" tabindex="-1"></a>      mes <span class="ot">&lt;-</span> Month.of.absence[i]</span>
+<span id="cb2-13"><a href="análisis-de-los-datos.html#cb2-13" tabindex="-1"></a>      dia_semana <span class="ot">&lt;-</span> Day.of.the.week[i]</span>
+<span id="cb2-14"><a href="análisis-de-los-datos.html#cb2-14" tabindex="-1"></a>      </span>
+<span id="cb2-15"><a href="análisis-de-los-datos.html#cb2-15" tabindex="-1"></a>      posibles_fechas <span class="ot">&lt;-</span> dias_semana_2007_df <span class="sc">%&gt;%</span></span>
+<span id="cb2-16"><a href="análisis-de-los-datos.html#cb2-16" tabindex="-1"></a>        <span class="fu">filter</span>(<span class="fu">month</span>(Fecha) <span class="sc">==</span> mes <span class="sc">&amp;</span> Dia_de_la_semana <span class="sc">==</span> dia_semana)</span>
+<span id="cb2-17"><a href="análisis-de-los-datos.html#cb2-17" tabindex="-1"></a>      </span>
+<span id="cb2-18"><a href="análisis-de-los-datos.html#cb2-18" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(posibles_fechas) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb2-19"><a href="análisis-de-los-datos.html#cb2-19" tabindex="-1"></a>        <span class="fu">sample</span>(posibles_fechas<span class="sc">$</span>Fecha, <span class="dv">1</span>)</span>
+<span id="cb2-20"><a href="análisis-de-los-datos.html#cb2-20" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb2-21"><a href="análisis-de-los-datos.html#cb2-21" tabindex="-1"></a>        <span class="cn">NA</span></span>
+<span id="cb2-22"><a href="análisis-de-los-datos.html#cb2-22" tabindex="-1"></a>      }</span>
+<span id="cb2-23"><a href="análisis-de-los-datos.html#cb2-23" tabindex="-1"></a>    }), <span class="at">origin =</span> <span class="st">&quot;1970-01-01&quot;</span>)</span>
+<span id="cb2-24"><a href="análisis-de-los-datos.html#cb2-24" tabindex="-1"></a>  )</span>
+<span id="cb2-25"><a href="análisis-de-los-datos.html#cb2-25" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="análisis-de-los-datos.html#cb2-26" tabindex="-1"></a><span class="co"># Verificar</span></span>
+<span id="cb2-27"><a href="análisis-de-los-datos.html#cb2-27" tabindex="-1"></a><span class="fu">head</span>(datos<span class="sc">$</span>Fecha)</span></code></pre></div>
 <pre><code>## [1] &quot;2007-07-17&quot; &quot;2007-07-17&quot; &quot;2007-07-11&quot; &quot;2007-07-12&quot; &quot;2007-07-12&quot;
 ## [6] &quot;2007-07-20&quot;</code></pre>
 <div id="media-movil" class="section level2 hasAnchor" number="2.1">
@@ -273,7 +733,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>En estos gráficos podemos observar que los puntos son caóticos o dispersos en todos los rezagos, no hay dependencia fuerte en el rezago, es decir no hay mucha relación entre el valor actual y el pasado.</p>
 <p>vamos a graficar la <em>Autocorrelation Function (ACF)</em>, esto mide cuánta correlación existe entre la serie y sus propios rezagos.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="análisis-de-los-datos.html#cb11-1" tabindex="-1"></a><span class="fu">acf</span>(datos<span class="sc">$</span>Absenteeism.time.in.hours, <span class="at">na.action =</span> na.pass, <span class="at">main =</span> <span class="st">&quot;ACF - Autocorrelación de ausencias&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="análisis-de-los-datos.html#cb10-1" tabindex="-1"></a><span class="fu">acf</span>(datos<span class="sc">$</span>Absenteeism.time.in.hours, <span class="at">na.action =</span> na.pass, <span class="at">main =</span> <span class="st">&quot;ACF - Autocorrelación de ausencias&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>A partir del resultado del gráfico se interprta que no hay correlaciones significativas en los rezagos.</p>
 </div>
@@ -299,52 +759,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol style="list-style-type: decimal">
 <li>Se crea una serie temporal agregada por día de la semana y se asegura que haya varias semanas.</li>
 </ol>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="análisis-de-los-datos.html#cb12-1" tabindex="-1"></a><span class="co"># Agrupar por fecha y sumar las horas de ausencia (puede haber varias por día)</span></span>
-<span id="cb12-2"><a href="análisis-de-los-datos.html#cb12-2" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
-<span id="cb12-3"><a href="análisis-de-los-datos.html#cb12-3" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Fecha)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-4"><a href="análisis-de-los-datos.html#cb12-4" tabindex="-1"></a>  <span class="fu">group_by</span>(Fecha) <span class="sc">%&gt;%</span></span>
-<span id="cb12-5"><a href="análisis-de-los-datos.html#cb12-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Horas =</span> <span class="fu">sum</span>(Absenteeism.time.in.hours, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb12-6"><a href="análisis-de-los-datos.html#cb12-6" tabindex="-1"></a>  <span class="fu">arrange</span>(Fecha)</span>
-<span id="cb12-7"><a href="análisis-de-los-datos.html#cb12-7" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="análisis-de-los-datos.html#cb12-8" tabindex="-1"></a><span class="co"># Rellenar fechas faltantes (por si hay días sin datos)</span></span>
-<span id="cb12-9"><a href="análisis-de-los-datos.html#cb12-9" tabindex="-1"></a>todas_las_fechas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb12-10"><a href="análisis-de-los-datos.html#cb12-10" tabindex="-1"></a>  <span class="at">Fecha =</span> <span class="fu">seq.Date</span>(<span class="fu">min</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="fu">max</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
-<span id="cb12-11"><a href="análisis-de-los-datos.html#cb12-11" tabindex="-1"></a>)</span>
-<span id="cb12-12"><a href="análisis-de-los-datos.html#cb12-12" tabindex="-1"></a></span>
-<span id="cb12-13"><a href="análisis-de-los-datos.html#cb12-13" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> todas_las_fechas <span class="sc">%&gt;%</span></span>
-<span id="cb12-14"><a href="análisis-de-los-datos.html#cb12-14" tabindex="-1"></a>  <span class="fu">left_join</span>(serie_diaria, <span class="at">by =</span> <span class="st">&quot;Fecha&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb12-15"><a href="análisis-de-los-datos.html#cb12-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Horas =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Horas), <span class="dv">0</span>, Horas))</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="análisis-de-los-datos.html#cb11-1" tabindex="-1"></a><span class="co"># Agrupar por fecha y sumar las horas de ausencia (puede haber varias por día)</span></span>
+<span id="cb11-2"><a href="análisis-de-los-datos.html#cb11-2" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="análisis-de-los-datos.html#cb11-3" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Fecha)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="análisis-de-los-datos.html#cb11-4" tabindex="-1"></a>  <span class="fu">group_by</span>(Fecha) <span class="sc">%&gt;%</span></span>
+<span id="cb11-5"><a href="análisis-de-los-datos.html#cb11-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Horas =</span> <span class="fu">sum</span>(Absenteeism.time.in.hours, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="análisis-de-los-datos.html#cb11-6" tabindex="-1"></a>  <span class="fu">arrange</span>(Fecha)</span>
+<span id="cb11-7"><a href="análisis-de-los-datos.html#cb11-7" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="análisis-de-los-datos.html#cb11-8" tabindex="-1"></a><span class="co"># Rellenar fechas faltantes (por si hay días sin datos)</span></span>
+<span id="cb11-9"><a href="análisis-de-los-datos.html#cb11-9" tabindex="-1"></a>todas_las_fechas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-10"><a href="análisis-de-los-datos.html#cb11-10" tabindex="-1"></a>  <span class="at">Fecha =</span> <span class="fu">seq.Date</span>(<span class="fu">min</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="fu">max</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
+<span id="cb11-11"><a href="análisis-de-los-datos.html#cb11-11" tabindex="-1"></a>)</span>
+<span id="cb11-12"><a href="análisis-de-los-datos.html#cb11-12" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="análisis-de-los-datos.html#cb11-13" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> todas_las_fechas <span class="sc">%&gt;%</span></span>
+<span id="cb11-14"><a href="análisis-de-los-datos.html#cb11-14" tabindex="-1"></a>  <span class="fu">left_join</span>(serie_diaria, <span class="at">by =</span> <span class="st">&quot;Fecha&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-15"><a href="análisis-de-los-datos.html#cb11-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Horas =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Horas), <span class="dv">0</span>, Horas))</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Se usa ts() especificando frequency = 7 (para periodicidad semanal).</li>
 </ol>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="análisis-de-los-datos.html#cb13-1" tabindex="-1"></a><span class="co"># Crear la serie temporal con frecuencia semanal (7 días)</span></span>
-<span id="cb13-2"><a href="análisis-de-los-datos.html#cb13-2" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">ts</span>(serie_diaria<span class="sc">$</span>Horas, <span class="at">frequency =</span> <span class="dv">7</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="análisis-de-los-datos.html#cb12-1" tabindex="-1"></a><span class="co"># Crear la serie temporal con frecuencia semanal (7 días)</span></span>
+<span id="cb12-2"><a href="análisis-de-los-datos.html#cb12-2" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">ts</span>(serie_diaria<span class="sc">$</span>Horas, <span class="at">frequency =</span> <span class="dv">7</span>)</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Aplicar la función decompose() o stl() sobre la serie. Por ultimo se realiza el plot del gráfico.</li>
 </ol>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="análisis-de-los-datos.html#cb14-1" tabindex="-1"></a><span class="co"># Descomposición aditiva</span></span>
-<span id="cb14-2"><a href="análisis-de-los-datos.html#cb14-2" tabindex="-1"></a>descomp <span class="ot">&lt;-</span> <span class="fu">decompose</span>(ts_diaria, <span class="at">type =</span> <span class="st">&quot;additive&quot;</span>)</span>
-<span id="cb14-3"><a href="análisis-de-los-datos.html#cb14-3" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="análisis-de-los-datos.html#cb14-4" tabindex="-1"></a><span class="co"># Graficar resultado</span></span>
-<span id="cb14-5"><a href="análisis-de-los-datos.html#cb14-5" tabindex="-1"></a><span class="fu">plot</span>(descomp)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="análisis-de-los-datos.html#cb13-1" tabindex="-1"></a><span class="co"># Descomposición aditiva</span></span>
+<span id="cb13-2"><a href="análisis-de-los-datos.html#cb13-2" tabindex="-1"></a>descomp <span class="ot">&lt;-</span> <span class="fu">decompose</span>(ts_diaria, <span class="at">type =</span> <span class="st">&quot;additive&quot;</span>)</span>
+<span id="cb13-3"><a href="análisis-de-los-datos.html#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="análisis-de-los-datos.html#cb13-4" tabindex="-1"></a><span class="co"># Graficar resultado</span></span>
+<span id="cb13-5"><a href="análisis-de-los-datos.html#cb13-5" tabindex="-1"></a><span class="fu">plot</span>(descomp)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="estacionariedad" class="section level2 hasAnchor" number="2.5">
 <h2><span class="header-section-number">2.5</span> Estacionariedad<a href="análisis-de-los-datos.html#estacionariedad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Establece la estabilidad de la media y la covarianza en la serie de tiempo. Diferente a la estacionalidad en la que se observa el periodo o frecuencia en el que se repite la serie.</p>
 <p>Para ello primero procedemos a hacer una visualización de la serie para ver si hay tendencias.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="análisis-de-los-datos.html#cb15-1" tabindex="-1"></a>serie_diaria <span class="sc">%&gt;%</span></span>
-<span id="cb15-2"><a href="análisis-de-los-datos.html#cb15-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Fecha, <span class="at">y =</span> Horas)) <span class="sc">+</span></span>
-<span id="cb15-3"><a href="análisis-de-los-datos.html#cb15-3" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;steelblue&quot;</span>) <span class="sc">+</span></span>
-<span id="cb15-4"><a href="análisis-de-los-datos.html#cb15-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Serie temporal de horas de ausentismo&quot;</span>,</span>
-<span id="cb15-5"><a href="análisis-de-los-datos.html#cb15-5" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Horas de Ausencia&quot;</span>) <span class="sc">+</span></span>
-<span id="cb15-6"><a href="análisis-de-los-datos.html#cb15-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="análisis-de-los-datos.html#cb14-1" tabindex="-1"></a>serie_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="análisis-de-los-datos.html#cb14-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Fecha, <span class="at">y =</span> Horas)) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="análisis-de-los-datos.html#cb14-3" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;steelblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-4"><a href="análisis-de-los-datos.html#cb14-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Serie temporal de horas de ausentismo&quot;</span>,</span>
+<span id="cb14-5"><a href="análisis-de-los-datos.html#cb14-5" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Horas de Ausencia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb14-6"><a href="análisis-de-los-datos.html#cb14-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>Luego aplicamos la prueba ADF (Augmented Dickey-Fuller)</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="análisis-de-los-datos.html#cb16-1" tabindex="-1"></a><span class="co"># Prueba de Dickey-Fuller aumentada (ADF)</span></span>
-<span id="cb16-2"><a href="análisis-de-los-datos.html#cb16-2" tabindex="-1"></a>adf_test <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(ts_diaria)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="análisis-de-los-datos.html#cb15-1" tabindex="-1"></a><span class="co"># Prueba de Dickey-Fuller aumentada (ADF)</span></span>
+<span id="cb15-2"><a href="análisis-de-los-datos.html#cb15-2" tabindex="-1"></a>adf_test <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(ts_diaria)</span></code></pre></div>
 <pre><code>## Warning in adf.test(ts_diaria): p-value smaller than printed p-value</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="análisis-de-los-datos.html#cb18-1" tabindex="-1"></a><span class="fu">print</span>(adf_test)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="análisis-de-los-datos.html#cb17-1" tabindex="-1"></a><span class="fu">print</span>(adf_test)</span></code></pre></div>
 <pre><code>## 
 ##  Augmented Dickey-Fuller Test
 ## 

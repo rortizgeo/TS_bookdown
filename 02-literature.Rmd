@@ -13,6 +13,8 @@ library(tseries)
 library(tsibble)
 library(fabletools)
 library(xts)
+library(kableExtra)
+library(magrittr)
 
 ```
 
@@ -27,8 +29,28 @@ A continuación se procede a cargar los datos de ausentismo laboral desde un arc
 # Cargar datos desde un archivo CSV
 datos <- read.csv("/Users/ricardoortiz/Desktop/Maestria_CD/Series_Tiempo/bookdown-TS/Absenteeism_at_work.csv", sep = ";")
 
-# Ver las primeras filas
-head(datos)
+# Mostrar primeras filas con formato profesional
+knitr::kable(
+  head(datos),
+  format = "html",
+  caption = "Tabla 1: Vista preliminar del ausentismo laboral",
+  align = c(rep("l", 2), rep("c", ncol(datos)-2)),  # Primeras 2 columnas a la izquierda
+  col.names = gsub("_", " ", colnames(datos))  # Reemplazar _ por espacios
+) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = FALSE,
+    font_size = 13,
+    position = "center"
+  ) %>%
+  row_spec(0, bold = TRUE, color = "white", background = "#2c3e50") %>%
+  column_spec(1, width = "8em") %>%  # Ancho fijo para primera columna
+  column_spec(2, width = "6em") %>%
+  footnote(
+    general = "Datos de absentismo laboral en una empresa",
+    general_title = "Fuente:",
+    footnote_as_chunk = TRUE
+  )
 ```
 
 Al revisar los datos se identifica que la variable de interés que puede ser apropiada para hacer el análisis es el tiempo de ausentismo en horas, disponible en la variable _Absenteeism.time.in.hours_. La cuál es la variable objetivo del dataset según la descripción del mismo.
