@@ -1,0 +1,11 @@
+ausentismo-laboral
+introducción
+finalidad-del-estudio
+diseño-del-estudio
+análisis-de-los-datos
+media-movil
+rezagos
+análísis-de-estacionalidad
+descomposición-de-la-serie-temporal
+estacionariedad
+diferenciación.

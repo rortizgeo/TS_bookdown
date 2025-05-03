@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 2 Análisis de los datos | Análisis de series temporales: Ausentismo laboral</title>
+  <meta name="description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 2 Análisis de los datos | Análisis de series temporales: Ausentismo laboral" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 2 Análisis de los datos | Análisis de series temporales: Ausentismo laboral" />
+  
+  <meta name="twitter:description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
+  
+
+<meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
+
+
+<meta name="date" content="2025-05-03" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="ausentismo-laboral.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html"><i class="fa fa-check"></i><b>1</b> AUSENTISMO LABORAL</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html#introducción"><i class="fa fa-check"></i><b>1.1</b> Introducción</a></li>
+<li class="chapter" data-level="1.2" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html#finalidad-del-estudio"><i class="fa fa-check"></i><b>1.2</b> Finalidad del estudio</a></li>
+<li class="chapter" data-level="1.3" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html#diseño-del-estudio"><i class="fa fa-check"></i><b>1.3</b> Diseño del estudio</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html"><i class="fa fa-check"></i><b>2</b> Análisis de los datos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#media-movil"><i class="fa fa-check"></i><b>2.1</b> Media Movil</a></li>
+<li class="chapter" data-level="2.2" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#rezagos"><i class="fa fa-check"></i><b>2.2</b> Rezagos</a></li>
+<li class="chapter" data-level="2.3" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#análísis-de-estacionalidad"><i class="fa fa-check"></i><b>2.3</b> Análísis de estacionalidad</a></li>
+<li class="chapter" data-level="2.4" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#descomposición-de-la-serie-temporal"><i class="fa fa-check"></i><b>2.4</b> Descomposición de la serie temporal</a></li>
+<li class="chapter" data-level="2.5" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#estacionariedad"><i class="fa fa-check"></i><b>2.5</b> Estacionariedad</a></li>
+<li class="chapter" data-level="2.6" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#diferenciación."><i class="fa fa-check"></i><b>2.6</b> Diferenciación.</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis de series temporales: Ausentismo laboral</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="análisis-de-los-datos" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Capítulo 2</span> Análisis de los datos<a href="análisis-de-los-datos.html#análisis-de-los-datos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>En el presente análisis se examina el comportamiento del ausentismo laboral a partir del conjunto de datos “Absenteeism at Work” disponible en el repositorio de la UCI Machine Learning. Para identificar patrones temporales y tendencias generales, se implementan técnicas de suavizamiento como la aproximación mediante promedios móviles. Además, se exploran los rezagos (lags) para evaluar la influencia de valores pasados en la dinámica actual del ausentismo, buscando detectar posibles relaciones de dependencia temporal. Finalmente, se realiza un análisis de estacionalidad para determinar si existen variaciones sistemáticas asociadas a ciclos recurrentes, como días de la semana, meses o estaciones del año, que afecten la frecuencia del ausentismo. Estas aproximaciones permiten construir una base sólida para entender mejor el fenómeno y orientar futuros modelos predictivos o estrategias de intervención en el contexto laboral.</p>
+<p>A continuación se procede a cargar los datos de ausentismo laboral desde un archivo local, descargado directamente de: <a href="https://archive.ics.uci.edu/dataset/445/absenteeism+at+work" class="uri">https://archive.ics.uci.edu/dataset/445/absenteeism+at+work</a>. Se imprime el encabezado para ver el contenido del dataset.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="análisis-de-los-datos.html#cb1-1" tabindex="-1"></a><span class="co"># Cargar datos desde un archivo CSV</span></span>
+<span id="cb1-2"><a href="análisis-de-los-datos.html#cb1-2" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/ricardoortiz/Desktop/Maestria_CD/Series_Tiempo/bookdown-TS/Absenteeism_at_work.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>)</span>
+<span id="cb1-3"><a href="análisis-de-los-datos.html#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="análisis-de-los-datos.html#cb1-4" tabindex="-1"></a><span class="co"># Ver las primeras filas</span></span>
+<span id="cb1-5"><a href="análisis-de-los-datos.html#cb1-5" tabindex="-1"></a><span class="fu">head</span>(datos)</span></code></pre></div>
+<pre><code>##   ID Reason.for.absence Month.of.absence Day.of.the.week Seasons Transportation.expense Distance.from.Residence.to.Work Service.time Age
+## 1 11                 26                7               3       1                    289                              36           13  33
+## 2 36                  0                7               3       1                    118                              13           18  50
+## 3  3                 23                7               4       1                    179                              51           18  38
+## 4  7                  7                7               5       1                    279                               5           14  39
+## 5 11                 23                7               5       1                    289                              36           13  33
+## 6  3                 23                7               6       1                    179                              51           18  38
+##   Work.load.Average.day Hit.target Disciplinary.failure Education Son Social.drinker Social.smoker Pet Weight Height Body.mass.index
+## 1               239.554         97                    0         1   2              1             0   1     90    172              30
+## 2               239.554         97                    1         1   1              1             0   0     98    178              31
+## 3               239.554         97                    0         1   0              1             0   0     89    170              31
+## 4               239.554         97                    0         1   2              1             1   0     68    168              24
+## 5               239.554         97                    0         1   2              1             0   1     90    172              30
+## 6               239.554         97                    0         1   0              1             0   0     89    170              31
+##   Absenteeism.time.in.hours
+## 1                         4
+## 2                         0
+## 3                         2
+## 4                         4
+## 5                         2
+## 6                         2</code></pre>
+<p>Al revisar los datos se identifica que la variable de interés que puede ser apropiada para hacer el análisis es el tiempo de ausentismo en horas, disponible en la variable <em>Absenteeism.time.in.hours</em>. La cuál es la variable objetivo del dataset según la descripción del mismo.</p>
+<p>El dataset no incluye una fecha específica por lo que es necesario construirla a partir de variables tales como Month.of.absence y Day.of.the.weeek. Para ello, usamos el siguiente código.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="análisis-de-los-datos.html#cb3-1" tabindex="-1"></a><span class="co"># Crear fechas de 2007 con día de la semana donde 1 = Domingo, ..., 7 = Sábado</span></span>
+<span id="cb3-2"><a href="análisis-de-los-datos.html#cb3-2" tabindex="-1"></a>fechas_2007 <span class="ot">&lt;-</span> <span class="fu">seq.Date</span>(<span class="at">from =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-01-01&quot;</span>), <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-12-31&quot;</span>), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
+<span id="cb3-3"><a href="análisis-de-los-datos.html#cb3-3" tabindex="-1"></a>dias_semana_2007 <span class="ot">&lt;-</span> <span class="fu">wday</span>(fechas_2007, <span class="at">week_start =</span> <span class="dv">7</span>)  <span class="co"># 1 = Domingo, 2 = Lunes, ..., 7 = Sábado</span></span>
+<span id="cb3-4"><a href="análisis-de-los-datos.html#cb3-4" tabindex="-1"></a>dias_semana_2007_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Fecha =</span> fechas_2007, <span class="at">Dia_de_la_semana =</span> dias_semana_2007)</span>
+<span id="cb3-5"><a href="análisis-de-los-datos.html#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="análisis-de-los-datos.html#cb3-6" tabindex="-1"></a><span class="co"># Crear la columna &#39;Fecha&#39; en el dataframe &#39;datos&#39;</span></span>
+<span id="cb3-7"><a href="análisis-de-los-datos.html#cb3-7" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb3-8"><a href="análisis-de-los-datos.html#cb3-8" tabindex="-1"></a>datos <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
+<span id="cb3-9"><a href="análisis-de-los-datos.html#cb3-9" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Month.of.absence) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(Day.of.the.week)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-10"><a href="análisis-de-los-datos.html#cb3-10" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-11"><a href="análisis-de-los-datos.html#cb3-11" tabindex="-1"></a>    <span class="at">Fecha =</span> <span class="fu">as.Date</span>(<span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(.), <span class="cf">function</span>(i) {</span>
+<span id="cb3-12"><a href="análisis-de-los-datos.html#cb3-12" tabindex="-1"></a>      mes <span class="ot">&lt;-</span> Month.of.absence[i]</span>
+<span id="cb3-13"><a href="análisis-de-los-datos.html#cb3-13" tabindex="-1"></a>      dia_semana <span class="ot">&lt;-</span> Day.of.the.week[i]</span>
+<span id="cb3-14"><a href="análisis-de-los-datos.html#cb3-14" tabindex="-1"></a>      </span>
+<span id="cb3-15"><a href="análisis-de-los-datos.html#cb3-15" tabindex="-1"></a>      posibles_fechas <span class="ot">&lt;-</span> dias_semana_2007_df <span class="sc">%&gt;%</span></span>
+<span id="cb3-16"><a href="análisis-de-los-datos.html#cb3-16" tabindex="-1"></a>        <span class="fu">filter</span>(<span class="fu">month</span>(Fecha) <span class="sc">==</span> mes <span class="sc">&amp;</span> Dia_de_la_semana <span class="sc">==</span> dia_semana)</span>
+<span id="cb3-17"><a href="análisis-de-los-datos.html#cb3-17" tabindex="-1"></a>      </span>
+<span id="cb3-18"><a href="análisis-de-los-datos.html#cb3-18" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(posibles_fechas) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb3-19"><a href="análisis-de-los-datos.html#cb3-19" tabindex="-1"></a>        <span class="fu">sample</span>(posibles_fechas<span class="sc">$</span>Fecha, <span class="dv">1</span>)</span>
+<span id="cb3-20"><a href="análisis-de-los-datos.html#cb3-20" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb3-21"><a href="análisis-de-los-datos.html#cb3-21" tabindex="-1"></a>        <span class="cn">NA</span></span>
+<span id="cb3-22"><a href="análisis-de-los-datos.html#cb3-22" tabindex="-1"></a>      }</span>
+<span id="cb3-23"><a href="análisis-de-los-datos.html#cb3-23" tabindex="-1"></a>    }), <span class="at">origin =</span> <span class="st">&quot;1970-01-01&quot;</span>)</span>
+<span id="cb3-24"><a href="análisis-de-los-datos.html#cb3-24" tabindex="-1"></a>  )</span>
+<span id="cb3-25"><a href="análisis-de-los-datos.html#cb3-25" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="análisis-de-los-datos.html#cb3-26" tabindex="-1"></a><span class="co"># Verificar</span></span>
+<span id="cb3-27"><a href="análisis-de-los-datos.html#cb3-27" tabindex="-1"></a><span class="fu">head</span>(datos<span class="sc">$</span>Fecha)</span></code></pre></div>
+<pre><code>## [1] &quot;2007-07-17&quot; &quot;2007-07-17&quot; &quot;2007-07-11&quot; &quot;2007-07-12&quot; &quot;2007-07-12&quot; &quot;2007-07-20&quot;</code></pre>
+<div id="media-movil" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Media Movil<a href="análisis-de-los-datos.html#media-movil" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El ausentismo laboral día a día puede tener mucha variabilidad, pues algunos días hay cero horas y otros días hay ausencias largas. La media móvil reduce las fluctuaciones diarias y muestra una tendencia más limpia. En este caso se generó un gráfico que muestra en rojo la variabilidad real y en azul la media móvil.</p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Se aplicó un promedio móvil de 5 días al ausentismo laboral registrado. A partir del gráfico se puede concluir que en el primer trimestre el ausentismo suele ser bajo a comparación de los siguientes trimestres, sobre todo el tercer que presenta un pico promedio de más de 50 horas</p>
+</div>
+<div id="rezagos" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Rezagos<a href="análisis-de-los-datos.html#rezagos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El análisis de rezagos busca identificar si el ausentismo de hoy está relacionado con el ausentismo de días anteriores. Por ejemplo, interesa saber si un empleado que falta hoy tiene más probabilidad de faltar también mañana, o si, después de un día de alta ausencia, el ausentismo tiende a aumentar o disminuir en los días siguientes. Este tipo de relación temporal es fundamental para la construcción de modelos predictivos, como los modelos ARIMA o las regresiones que incorporan dependencias en el tiempo.</p>
+<pre><code>## [1] 0.04146078</code></pre>
+<pre><code>## [1] -0.008995374</code></pre>
+<pre><code>## [1] -0.001743892</code></pre>
+<p>El análisis de los rezagos a 1, 7 y 15 días muestra correlaciones muy bajas (0.041, - 0.008 y -0.0017 respectivamente), indicando la ausencia de dependencia temporal significativa a corto, mediano y largo plazo semanal en los datos de ausentismo laboral. Estos resultados sugieren que el ausentismo no sigue un patrón repetitivo ni está influenciado por ausencias anteriores, comportándose de manera aleatoria a lo largo del tiempo. Esto claramente está también influenciado por la forma como se construyó la serie de tiempo de forma aleatoria a partir de la información disponible.</p>
+<p>Este tipo de gráfico muestra la relación entre el valor en <em>t</em> y su valor en <em>t-1</em>, esto es:</p>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>En estos gráficos podemos observar que los puntos son caóticos o dispersos en todos los rezagos, no hay dependencia fuerte en el rezago, es decir no hay mucha relación entre el valor actual y el pasado.</p>
+<p>vamos a graficar la <em>Autocorrelation Function (ACF)</em>, esto mide cuánta correlación existe entre la serie y sus propios rezagos.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="análisis-de-los-datos.html#cb11-1" tabindex="-1"></a><span class="fu">acf</span>(datos<span class="sc">$</span>Absenteeism.time.in.hours, <span class="at">na.action =</span> na.pass, <span class="at">main =</span> <span class="st">&quot;ACF - Autocorrelación de ausencias&quot;</span>)</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>A partir del resultado del gráfico se interprta que no hay correlaciones significativas en los rezagos.</p>
+</div>
+<div id="análísis-de-estacionalidad" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Análísis de estacionalidad<a href="análisis-de-los-datos.html#análísis-de-estacionalidad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>La estacionalidad es un patrón repetitivo o cíclico que ocurre a intervalos regulares en una serie de tiempo, como cada semana, cada mes o cada año.</p>
+<p>En este caso, queremos ver si hay momentos del año (o del mes) en los que el ausentismo tiende a aumentar o disminuir sistemáticamente.Como en el conjunto de datos tenemos el mes (simulado con fechas) y las horas de ausentismo, podemos ver si ciertos meses muestran mayores ausencias que otros.</p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales.</p>
+<p>Para abordar esta sección del documento sobre análisis de series temporales con base en el conjunto de datos de ausentismo laboral de la UCI, ahora se evalurán otros análisis como la descomposición, estacionariedad y si es necesario se aplicarán las transformaciones necesarias.</p>
+</div>
+<div id="descomposición-de-la-serie-temporal" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Descomposición de la serie temporal<a href="análisis-de-los-datos.html#descomposición-de-la-serie-temporal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Cualqier serie se puede descomponer en su parte estacional, de tendencia y residual. Exiten dos alternativas, una descomposición por adición y multiplicativa. Para ello usaremos la función descompose.</p>
+<p>En un modelo aditivo, la serie temporal se descompone en:</p>
+<pre><code>Tendencia (Trend): Refleja la dirección general del ausentismo a largo plazo (ej.: aumento o disminución progresiva).
+
+Estacionalidad (Seasonality): Patrones repetitivos cada año (ej.: picos en invierno por enfermedades o en festivos).
+
+Residuales (Residual): Variabilidad no explicada por los componentes anteriores (eventos aleatorios o errores).</code></pre>
+<p>Para aplicar una descomposición con base en día de la semana, teniendo en cuenta la estructura del dataset y que se cuenta con datos para un año organizados por día del mes y día de la semana se siguen estos pasos.</p>
+<ol style="list-style-type: decimal">
+<li>Se crea una serie temporal agregada por día de la semana y se asegura que haya varias semanas.</li>
+</ol>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="análisis-de-los-datos.html#cb13-1" tabindex="-1"></a><span class="co"># Agrupar por fecha y sumar las horas de ausencia (puede haber varias por día)</span></span>
+<span id="cb13-2"><a href="análisis-de-los-datos.html#cb13-2" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> datos <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="análisis-de-los-datos.html#cb13-3" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Fecha)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="análisis-de-los-datos.html#cb13-4" tabindex="-1"></a>  <span class="fu">group_by</span>(Fecha) <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="análisis-de-los-datos.html#cb13-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Horas =</span> <span class="fu">sum</span>(Absenteeism.time.in.hours, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="análisis-de-los-datos.html#cb13-6" tabindex="-1"></a>  <span class="fu">arrange</span>(Fecha)</span>
+<span id="cb13-7"><a href="análisis-de-los-datos.html#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="análisis-de-los-datos.html#cb13-8" tabindex="-1"></a><span class="co"># Rellenar fechas faltantes (por si hay días sin datos)</span></span>
+<span id="cb13-9"><a href="análisis-de-los-datos.html#cb13-9" tabindex="-1"></a>todas_las_fechas <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb13-10"><a href="análisis-de-los-datos.html#cb13-10" tabindex="-1"></a>  <span class="at">Fecha =</span> <span class="fu">seq.Date</span>(<span class="fu">min</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="fu">max</span>(serie_diaria<span class="sc">$</span>Fecha), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
+<span id="cb13-11"><a href="análisis-de-los-datos.html#cb13-11" tabindex="-1"></a>)</span>
+<span id="cb13-12"><a href="análisis-de-los-datos.html#cb13-12" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="análisis-de-los-datos.html#cb13-13" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> todas_las_fechas <span class="sc">%&gt;%</span></span>
+<span id="cb13-14"><a href="análisis-de-los-datos.html#cb13-14" tabindex="-1"></a>  <span class="fu">left_join</span>(serie_diaria, <span class="at">by =</span> <span class="st">&quot;Fecha&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-15"><a href="análisis-de-los-datos.html#cb13-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Horas =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Horas), <span class="dv">0</span>, Horas))</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Se usa ts() especificando frequency = 7 (para periodicidad semanal).</li>
+</ol>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="análisis-de-los-datos.html#cb14-1" tabindex="-1"></a><span class="co"># Crear la serie temporal con frecuencia semanal (7 días)</span></span>
+<span id="cb14-2"><a href="análisis-de-los-datos.html#cb14-2" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">ts</span>(serie_diaria<span class="sc">$</span>Horas, <span class="at">frequency =</span> <span class="dv">7</span>)</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Aplicar la función decompose() o stl() sobre la serie. Por ultimo se realiza el plot del gráfico.</li>
+</ol>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="análisis-de-los-datos.html#cb15-1" tabindex="-1"></a><span class="co"># Descomposición aditiva</span></span>
+<span id="cb15-2"><a href="análisis-de-los-datos.html#cb15-2" tabindex="-1"></a>descomp <span class="ot">&lt;-</span> <span class="fu">decompose</span>(ts_diaria, <span class="at">type =</span> <span class="st">&quot;additive&quot;</span>)</span>
+<span id="cb15-3"><a href="análisis-de-los-datos.html#cb15-3" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="análisis-de-los-datos.html#cb15-4" tabindex="-1"></a><span class="co"># Graficar resultado</span></span>
+<span id="cb15-5"><a href="análisis-de-los-datos.html#cb15-5" tabindex="-1"></a><span class="fu">plot</span>(descomp)</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+<div id="estacionariedad" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> Estacionariedad<a href="análisis-de-los-datos.html#estacionariedad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Establece la estabilidad de la media y la covarianza en la serie de tiempo. Diferente a la estacionalidad en la que se observa el periodo o frecuencia en el que se repite la serie.</p>
+<p>Para ello primero procedemos a hacer una visualización de la serie para ver si hay tendencias.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="análisis-de-los-datos.html#cb16-1" tabindex="-1"></a>serie_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="análisis-de-los-datos.html#cb16-2" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Fecha, <span class="at">y =</span> Horas)) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="análisis-de-los-datos.html#cb16-3" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;steelblue&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="análisis-de-los-datos.html#cb16-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Serie temporal de horas de ausentismo&quot;</span>,</span>
+<span id="cb16-5"><a href="análisis-de-los-datos.html#cb16-5" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Fecha&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Horas de Ausencia&quot;</span>) <span class="sc">+</span></span>
+<span id="cb16-6"><a href="análisis-de-los-datos.html#cb16-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Luego aplicamos la prueba ADF (Augmented Dickey-Fuller)</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="análisis-de-los-datos.html#cb17-1" tabindex="-1"></a><span class="co"># Prueba de Dickey-Fuller aumentada (ADF)</span></span>
+<span id="cb17-2"><a href="análisis-de-los-datos.html#cb17-2" tabindex="-1"></a>adf_test <span class="ot">&lt;-</span> <span class="fu">adf.test</span>(ts_diaria)</span></code></pre></div>
+<pre><code>## Warning in adf.test(ts_diaria): p-value smaller than printed p-value</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="análisis-de-los-datos.html#cb19-1" tabindex="-1"></a><span class="fu">print</span>(adf_test)</span></code></pre></div>
+<pre><code>## 
+##  Augmented Dickey-Fuller Test
+## 
+## data:  ts_diaria
+## Dickey-Fuller = -5.714, Lag order = 7, p-value = 0.01
+## alternative hypothesis: stationary</code></pre>
+<p>La prueba indica que p-value es menor a 0.05 por lo que se asume que la serie efectivamente es estacionaria. Esto implica que las propiedades estadísticas de esta serie (media, varianza, autocorrelación) no cambian en el tiempo.</p>
+</div>
+<div id="diferenciación." class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> Diferenciación.<a href="análisis-de-los-datos.html#diferenciación." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Dado que el resultado de la prueba de Dickey-Fuller aumentada (ADF) arrojó un p-valor de 0.01, podemos rechazar la hipótesis nula de que la serie tiene una raíz unitaria, lo que indica que la serie es estacionaria. En consecuencia, no es necesario aplicar técnicas de diferenciación, ya que la serie no presenta una tendencia sistemática ni una varianza creciente que requiera ser eliminada para su análisis. Esta conclusión también puede ser respaldada visualmente mediante la gráfica de la serie y la función de autocorrelación (ACF), que muestran un comportamiento estable en el tiempo y una rápida disminución de las autocorrelaciones</p>
+
+<p>En construcción</p>
+
+<p>En construcción</p>
+
+<p>En construcción</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="ausentismo-laboral.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/rstudio/bookdown-demo/edit/master/02-literature.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>
