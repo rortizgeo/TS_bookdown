@@ -231,7 +231,7 @@ datos %>%
 
 ```
 
-El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales.
+El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales. Sin embargo, al hacer el análisis semanal si parece observarse una tendencia de mayor ausentismo en los primeros días de la semana luego del fin de semana. 
 
 
 Para abordar esta sección del documento sobre análisis de series temporales con base en el conjunto de datos de ausentismo laboral de la UCI, ahora se evalurán otros análisis como la descomposición, estacionariedad y si es necesario se aplicarán las transformaciones necesarias. 
@@ -288,6 +288,20 @@ descomp <- decompose(ts_diaria, type = "additive")
 # Graficar resultado
 plot(descomp)
 ```
+A continuación se analizan los resultados obtenidos en el gráfico de descomposición de la serie temporal que representa, en el eje _x_, el índice temporal de observación, que en este caso es semanal (es decir, cada punto es una semana del año). El eje _y_ representa el número total de horas de ausentismos laboral por semana que llegan a alcanzar hasta las 150 semanas, indicando semanas con alta acumulación de horas de ausencia. 
+
+_Observed (Observada)_:
+La serie original presenta variaciones notables, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.
+
+_Trend (Tendencia)_:
+La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa, seguidos de caídas, lo cual puede estar asociado a factores contextuales como estaciones del año que suelen estar asociadas con brotes de enfermedades o alergias. También pude mostrar tendencias asociadas a periodos frecuentes de ausentismo como semana santa, vacaciones de mitad y final de año. 
+
+_Seasonal (Estacionalidad)_:
+La componente estacional es clara y bien definida, con un patrón cíclico semanal o cercano al semanal (como fue el caso de la descomposición diaria por día de la semana). Esto sugiere que existe un patrón repetitivo y consistente en el ausentismo, posiblemente relacionado con los días laborales o fines de semana, en los que los niveles de ausentismo tienden a variar sistemáticamente.
+
+_Random (Ruido aleatorio)_:
+El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Estos podrían deberse a causas extraordinarias.
+
 
 ## Estacionariedad
 
@@ -317,6 +331,11 @@ print(adf_test)
 La prueba indica que p-value es menor a 0.05 por lo que se asume que la serie efectivamente es estacionaria. Esto implica que las propiedades estadísticas de esta serie (media, varianza, autocorrelación) no cambian en el tiempo.
 
 
-## Diferenciación. 
+## Diferenciación
 
 Dado que el resultado de la prueba de Dickey-Fuller aumentada (ADF) arrojó un p-valor de 0.01, podemos rechazar la hipótesis nula de que la serie tiene una raíz unitaria, lo que indica que la serie es estacionaria. En consecuencia, no es necesario aplicar técnicas de diferenciación, ya que la serie no presenta una tendencia sistemática ni una varianza creciente que requiera ser eliminada para su análisis. Esta conclusión también puede ser respaldada visualmente mediante la gráfica de la serie y la función de autocorrelación (ACF), que muestran un comportamiento estable en el tiempo y una rápida disminución de las autocorrelaciones
+
+
+## Conclusión 
+
+La descomposición confirma que el ausentismo laboral tiene una estructura estacional fuerte y una tendencia variable, además de una cantidad de ruido considerable. Esto respalda la necesidad de utilizar modelos que capturen tanto la estacionalidad como la tendencia. Además, el resultado del ADF que indicó estacionariedad sugiere que la serie ya es adecuada para modelado sin diferenciación adicional.
