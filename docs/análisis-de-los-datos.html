@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-05-03" />
+<meta name="date" content="2025-05-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -157,7 +157,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.3" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#análísis-de-estacionalidad"><i class="fa fa-check"></i><b>2.3</b> Análísis de estacionalidad</a></li>
 <li class="chapter" data-level="2.4" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#descomposición-de-la-serie-temporal"><i class="fa fa-check"></i><b>2.4</b> Descomposición de la serie temporal</a></li>
 <li class="chapter" data-level="2.5" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#estacionariedad"><i class="fa fa-check"></i><b>2.5</b> Estacionariedad</a></li>
-<li class="chapter" data-level="2.6" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#diferenciación."><i class="fa fa-check"></i><b>2.6</b> Diferenciación.</a></li>
+<li class="chapter" data-level="2.6" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#diferenciación"><i class="fa fa-check"></i><b>2.6</b> Diferenciación</a></li>
+<li class="chapter" data-level="2.7" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#conclusión"><i class="fa fa-check"></i><b>2.7</b> Conclusión</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -743,7 +744,7 @@ Absenteeism.time.in.hours
 <p>En este caso, queremos ver si hay momentos del año (o del mes) en los que el ausentismo tiende a aumentar o disminuir sistemáticamente.Como en el conjunto de datos tenemos el mes (simulado con fechas) y las horas de ausentismo, podemos ver si ciertos meses muestran mayores ausencias que otros.</p>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p>El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales.</p>
+<p>El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales. Sin embargo, al hacer el análisis semanal si parece observarse una tendencia de mayor ausentismo en los primeros días de la semana luego del fin de semana.</p>
 <p>Para abordar esta sección del documento sobre análisis de series temporales con base en el conjunto de datos de ausentismo laboral de la UCI, ahora se evalurán otros análisis como la descomposición, estacionariedad y si es necesario se aplicarán las transformaciones necesarias.</p>
 </div>
 <div id="descomposición-de-la-serie-temporal" class="section level2 hasAnchor" number="2.4">
@@ -787,7 +788,16 @@ Absenteeism.time.in.hours
 <span id="cb13-3"><a href="análisis-de-los-datos.html#cb13-3" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="análisis-de-los-datos.html#cb13-4" tabindex="-1"></a><span class="co"># Graficar resultado</span></span>
 <span id="cb13-5"><a href="análisis-de-los-datos.html#cb13-5" tabindex="-1"></a><span class="fu">plot</span>(descomp)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" />
+A continuación se analizan los resultados obtenidos en el gráfico de descomposición de la serie temporal que representa, en el eje <em>x</em>, el índice temporal de observación, que en este caso es semanal (es decir, cada punto es una semana del año). El eje <em>y</em> representa el número total de horas de ausentismos laboral por semana que llegan a alcanzar hasta las 150 semanas, indicando semanas con alta acumulación de horas de ausencia.</p>
+<p><em>Observed (Observada)</em>:
+La serie original presenta variaciones notables, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.</p>
+<p><em>Trend (Tendencia)</em>:
+La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa, seguidos de caídas, lo cual puede estar asociado a factores contextuales como estaciones del año que suelen estar asociadas con brotes de enfermedades o alergias. También pude mostrar tendencias asociadas a periodos frecuentes de ausentismo como semana santa, vacaciones de mitad y final de año.</p>
+<p><em>Seasonal (Estacionalidad)</em>:
+La componente estacional es clara y bien definida, con un patrón cíclico semanal o cercano al semanal (como fue el caso de la descomposición diaria por día de la semana). Esto sugiere que existe un patrón repetitivo y consistente en el ausentismo, posiblemente relacionado con los días laborales o fines de semana, en los que los niveles de ausentismo tienden a variar sistemáticamente.</p>
+<p><em>Random (Ruido aleatorio)</em>:
+El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Estos podrían deberse a causas extraordinarias.</p>
 </div>
 <div id="estacionariedad" class="section level2 hasAnchor" number="2.5">
 <h2><span class="header-section-number">2.5</span> Estacionariedad<a href="análisis-de-los-datos.html#estacionariedad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -813,9 +823,13 @@ Absenteeism.time.in.hours
 ## alternative hypothesis: stationary</code></pre>
 <p>La prueba indica que p-value es menor a 0.05 por lo que se asume que la serie efectivamente es estacionaria. Esto implica que las propiedades estadísticas de esta serie (media, varianza, autocorrelación) no cambian en el tiempo.</p>
 </div>
-<div id="diferenciación." class="section level2 hasAnchor" number="2.6">
-<h2><span class="header-section-number">2.6</span> Diferenciación.<a href="análisis-de-los-datos.html#diferenciación." class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="diferenciación" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> Diferenciación<a href="análisis-de-los-datos.html#diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Dado que el resultado de la prueba de Dickey-Fuller aumentada (ADF) arrojó un p-valor de 0.01, podemos rechazar la hipótesis nula de que la serie tiene una raíz unitaria, lo que indica que la serie es estacionaria. En consecuencia, no es necesario aplicar técnicas de diferenciación, ya que la serie no presenta una tendencia sistemática ni una varianza creciente que requiera ser eliminada para su análisis. Esta conclusión también puede ser respaldada visualmente mediante la gráfica de la serie y la función de autocorrelación (ACF), que muestran un comportamiento estable en el tiempo y una rápida disminución de las autocorrelaciones</p>
+</div>
+<div id="conclusión" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> Conclusión<a href="análisis-de-los-datos.html#conclusión" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>La descomposición confirma que el ausentismo laboral tiene una estructura estacional fuerte y una tendencia variable, además de una cantidad de ruido considerable. Esto respalda la necesidad de utilizar modelos que capturen tanto la estacionalidad como la tendencia. Además, el resultado del ADF que indicó estacionariedad sugiere que la serie ya es adecuada para modelado sin diferenciación adicional.</p>
 
 <p>.</p>
 

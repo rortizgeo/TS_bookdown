@@ -9,4 +9,5 @@ rezagos
 análísis-de-estacionalidad
 descomposición-de-la-serie-temporal
 estacionariedad
-diferenciación.
+diferenciación
+conclusión
