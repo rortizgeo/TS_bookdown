@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-05-04" />
+<meta name="date" content="2025-05-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -184,7 +184,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="análisis-de-los-datos" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Capítulo 2</span> Análisis de los datos<a href="análisis-de-los-datos.html#análisis-de-los-datos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>En el presente análisis se examina el comportamiento del ausentismo laboral a partir del conjunto de datos “Absenteeism at Work” disponible en el repositorio de la UCI Machine Learning. Para identificar patrones temporales y tendencias generales, se implementan técnicas de suavizamiento como la aproximación mediante promedios móviles. Además, se exploran los rezagos (lags) para evaluar la influencia de valores pasados en la dinámica actual del ausentismo, buscando detectar posibles relaciones de dependencia temporal. Finalmente, se realiza un análisis de estacionalidad para determinar si existen variaciones sistemáticas asociadas a ciclos recurrentes, como días de la semana, meses o estaciones del año, que afecten la frecuencia del ausentismo. Estas aproximaciones permiten construir una base sólida para entender mejor el fenómeno y orientar futuros modelos predictivos o estrategias de intervención en el contexto laboral.</p>
-<p>A continuación se procede a cargar los datos de ausentismo laboral desde un archivo local, descargado directamente de: <a href="https://archive.ics.uci.edu/dataset/445/absenteeism+at+work" class="uri">https://archive.ics.uci.edu/dataset/445/absenteeism+at+work</a>. Se imprime el encabezado para ver el contenido del dataset.</p>
+<p>A continuación se procede a cargar los datos de ausentismo laboral desde un archivo local disponibles en: <a href="https://archive.ics.uci.edu/dataset/445/absenteeism+at+work" class="uri">https://archive.ics.uci.edu/dataset/445/absenteeism+at+work</a>. Se imprime el encabezado para ver el contenido del dataset.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="análisis-de-los-datos.html#cb1-1" tabindex="-1"></a><span class="co"># Cargar datos desde un archivo CSV</span></span>
 <span id="cb1-2"><a href="análisis-de-los-datos.html#cb1-2" tabindex="-1"></a>datos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/ricardoortiz/Desktop/Maestria_CD/Series_Tiempo/bookdown-TS/Absenteeism_at_work.csv&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>)</span>
 <span id="cb1-3"><a href="análisis-de-los-datos.html#cb1-3" tabindex="-1"></a></span>
@@ -681,7 +681,7 @@ Absenteeism.time.in.hours
 </tr>
 </tfoot>
 </table>
-<p>Al revisar los datos se identifica que la variable de interés que puede ser apropiada para hacer el análisis es el tiempo de ausentismo en horas, disponible en la variable <em>Absenteeism.time.in.hours</em>. La cuál es la variable objetivo del dataset según la descripción del mismo.</p>
+<p>Al revisar los datos se identifica que la variable de interés que puede ser apropiada para hacer el análisis es el tiempo de ausentismo en horas, ( <em>Absenteeism.time.in.hours</em> ). La cuál es la variable objetivo del dataset según la descripción del mismo.</p>
 <p>El dataset no incluye una fecha específica por lo que es necesario construirla a partir de variables tales como Month.of.absence y Day.of.the.weeek. Para ello, usamos el siguiente código.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="análisis-de-los-datos.html#cb2-1" tabindex="-1"></a><span class="co"># Crear fechas de 2007 con día de la semana donde 1 = Domingo, ..., 7 = Sábado</span></span>
 <span id="cb2-2"><a href="análisis-de-los-datos.html#cb2-2" tabindex="-1"></a>fechas_2007 <span class="ot">&lt;-</span> <span class="fu">seq.Date</span>(<span class="at">from =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-01-01&quot;</span>), <span class="at">to =</span> <span class="fu">as.Date</span>(<span class="st">&quot;2007-12-31&quot;</span>), <span class="at">by =</span> <span class="st">&quot;day&quot;</span>)</span>
@@ -724,7 +724,7 @@ Absenteeism.time.in.hours
 <pre><code>## [1] 0.04146078</code></pre>
 <pre><code>## [1] -0.008995374</code></pre>
 <pre><code>## [1] -0.001743892</code></pre>
-<p>El análisis de los rezagos a 1, 7 y 15 días muestra correlaciones muy bajas (0.041, - 0.008 y -0.0017 respectivamente), indicando la ausencia de dependencia temporal significativa a corto, mediano y largo plazo semanal en los datos de ausentismo laboral. Estos resultados sugieren que el ausentismo no sigue un patrón repetitivo ni está influenciado por ausencias anteriores, comportándose de manera aleatoria a lo largo del tiempo. Esto claramente está también influenciado por la forma como se construyó la serie de tiempo de forma aleatoria a partir de la información disponible.</p>
+<p>El análisis de los rezagos a 1, 7 y 15 días muestra correlaciones muy bajas (0.041, - 0.008 y -0.0017 respectivamente), indicando la ausencia de dependencia temporal significativa en los datos de ausentismo laboral. Estos resultados sugieren que el ausentismo no sigue un patrón repetitivo ni está influenciado por ausencias anteriores, comportándose de manera aleatoria a lo largo del tiempo. Esto claramente está también influenciado por la forma como se construyó la serie de tiempo de forma aleatoria a partir de la información disponible.</p>
 <p>Este tipo de gráfico muestra la relación entre el valor en <em>t</em> y su valor en <em>t-1</em>, esto es:</p>
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
@@ -793,11 +793,11 @@ A continuación se analizan los resultados obtenidos en el gráfico de descompos
 <p><em>Observed (Observada)</em>:
 La serie original presenta variaciones notables, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.</p>
 <p><em>Trend (Tendencia)</em>:
-La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa, seguidos de caídas, lo cual puede estar asociado a factores contextuales como estaciones del año que suelen estar asociadas con brotes de enfermedades o alergias. También pude mostrar tendencias asociadas a periodos frecuentes de ausentismo como semana santa, vacaciones de mitad y final de año.</p>
+La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa, seguidos de caídas, lo cual puede estar asociado a factores contextuales como estaciones del año que suelen estar asociadas con brotes de enfermedades o alergias. También puede mostrar tendencias asociadas a periodos frecuentes de ausentismo como semana santa, vacaciones de mitad y final de año.</p>
 <p><em>Seasonal (Estacionalidad)</em>:
 La componente estacional es clara y bien definida, con un patrón cíclico semanal o cercano al semanal (como fue el caso de la descomposición diaria por día de la semana). Esto sugiere que existe un patrón repetitivo y consistente en el ausentismo, posiblemente relacionado con los días laborales o fines de semana, en los que los niveles de ausentismo tienden a variar sistemáticamente.</p>
 <p><em>Random (Ruido aleatorio)</em>:
-El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Estos podrían deberse a causas extraordinarias.</p>
+El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Estos podrían deberse a causas extraordinarias o a la presencia de variables de confusión.</p>
 </div>
 <div id="estacionariedad" class="section level2 hasAnchor" number="2.5">
 <h2><span class="header-section-number">2.5</span> Estacionariedad<a href="análisis-de-los-datos.html#estacionariedad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -821,11 +821,15 @@ El componente aleatorio muestra picos aislados, lo que indica eventos impredecib
 ## data:  ts_diaria
 ## Dickey-Fuller = -5.714, Lag order = 7, p-value = 0.01
 ## alternative hypothesis: stationary</code></pre>
+<ul>
+<li>Hipótesis nula: Los datos son no estacionarios</li>
+<li>Hipótesis alterna: Los datos son estacionarios</li>
+</ul>
 <p>La prueba indica que p-value es menor a 0.05 por lo que se asume que la serie efectivamente es estacionaria. Esto implica que las propiedades estadísticas de esta serie (media, varianza, autocorrelación) no cambian en el tiempo.</p>
 </div>
 <div id="diferenciación" class="section level2 hasAnchor" number="2.6">
 <h2><span class="header-section-number">2.6</span> Diferenciación<a href="análisis-de-los-datos.html#diferenciación" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Dado que el resultado de la prueba de Dickey-Fuller aumentada (ADF) arrojó un p-valor de 0.01, podemos rechazar la hipótesis nula de que la serie tiene una raíz unitaria, lo que indica que la serie es estacionaria. En consecuencia, no es necesario aplicar técnicas de diferenciación, ya que la serie no presenta una tendencia sistemática ni una varianza creciente que requiera ser eliminada para su análisis. Esta conclusión también puede ser respaldada visualmente mediante la gráfica de la serie y la función de autocorrelación (ACF), que muestran un comportamiento estable en el tiempo y una rápida disminución de las autocorrelaciones</p>
+<p>Para el proceso de diferenciacion se generaron 2 hipotesis de trabajo para la prueba de Dickey-Fuller. Dado que el resultado de la prueba de Dickey-Fuller aumentada (ADF) arrojó un p-valor de 0.01, podemos rechazar la hipótesis nula de que la serie tiene una raíz unitaria, lo que indica que la serie es estacionaria. En consecuencia, no es necesario aplicar técnicas de diferenciación, ya que la serie no presenta una tendencia sistemática ni una varianza creciente que requiera ser eliminada para su análisis. Esta conclusión también puede ser respaldada visualmente mediante la gráfica de la serie y la función de autocorrelación (ACF), que muestran un comportamiento estable en el tiempo y una rápida disminución de las autocorrelaciones</p>
 </div>
 <div id="conclusión" class="section level2 hasAnchor" number="2.7">
 <h2><span class="header-section-number">2.7</span> Conclusión<a href="análisis-de-los-datos.html#conclusión" class="anchor-section" aria-label="Anchor link to header"></a></h2>
