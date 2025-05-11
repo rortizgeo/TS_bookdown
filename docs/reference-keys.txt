@@ -13,3 +13,5 @@ diferenciación
 conclusión
 predicciones
 método-holt-winters
+predicción-próximos-7-días
+conclución-aplicacion-metodología-holt-winters

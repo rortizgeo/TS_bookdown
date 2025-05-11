@@ -1,12 +1,9 @@
+
 # Predicciones
 
 ## Método Holt-Winters
 
-
-```{r}
-#Se instala libreria TSA
-library(TSA)
-```
+El método Holt-Winters es una técnica de pronóstico de series temporales que incorpora elementos de tendencia y estacionalidad, extendiendo el método de suavizado exponencial simple. Implica tres parámetros de suavizado que se ajustan al nivel, la tendencia y la componente estacional de la serie temporal. El método de Holt Winters es utilizado para realizar pronósticos del comportamiento de una serie temporal a partir de los datos obtenidos anteriormente. El método se basa en un algoritmo iterativo que a cada tiempo (mes o semana) realiza un pronóstico sobre el comportamiento de la serie en base a promedios debidamente ponderados de los datos anteriores.
 
 Cómo resultado del capítulo 2, se construyó una serie temporal diaria con frecuencia semanal (7 días), que comienza en la semana 1 del ciclo 1 y termina en la semana 53 del ciclo 1. Los valores tienen una distribución asimétrica con muchos ceros (25% de los datos son 0) pero con algunos valores muy altos (hasta 168).
 
@@ -20,7 +17,7 @@ summary(ts_diaria)
 ```
 El siguiente gráfico muestra que los datos presentan un comportamiento errático con valores altos de ausentimos en algunas semanas. Sin embargo, la línea generada no muestra una tendencia hacía el aumento o disminución.
 
-```{r}
+```{r, warning=FALSE, echo=FALSE}
 #Observamos la tendencia y los ciclos
 plot(ts_diaria)
 abline(reg = lm(ts_diaria~time(ts_diaria)))
@@ -30,7 +27,7 @@ Para analizar el comportamiento de los datos se intenta realizar una transformac
 
 En ese sentido, se debe recurrir a otro tipo de transformación que no genere modificaciones profundas en los datos, para ello, se hace uso de una técnica
 
-```{r}
+```{r, warning=FALSE, echo=FALSE}
 
 # Versión optimizada (encontrar c óptimo)
 c_opt <- min(ts_diaria[ts_diaria > 0])/2  # Mitad del valor mínimo positivo
@@ -39,7 +36,10 @@ ts_transf <- log(ts_diaria + c_opt)
 #Se usa funcion logaritmica para visualizar los datos
 plot(log(ts_transf))
 ```
+
 Una desventaja de esta transformación es que puede crear un "hueco" artificial entre los ceros transformados y los valores pequeños positivos como se muestra en el gráfico. Adicionalmente, los coeficientes en modelos ajustados a datos transformados requieren interpretación cuidadosa.  Sin embargo estos "huecos" son una representación fiel de la discontinuidad matemática entre cero y valores positivos, además de un indicador visual de la presencia de ceros en los datos originales que puede ser una propiedad deseable en muchos casos, ya que marca claramente la diferencia entre "cero" y "casi cero".
+
+A continuación se aplica el método Holt-Winters y a partir de un gráfico intentamos observar como el modelo se ajusta a los datos originales. Posteriormente, se aplica el método a los datos tranformados. 
 
 ```{r}
 #Se crea una nueva serie de datos muy cerca de los datos originales
@@ -59,31 +59,52 @@ plot(hwt, main = "Suavizamiento Holt-Winters - Serie Transformada")
 par(mfrow = c(1, 1))
 ```
 
+Cómo se observa en el gráfico, el método Holt-Winter aplicado a los datos originales (ts_diaria) no se ajusta completamente a los picos de ausentismo que se presentan en algunos días. Una vez se aplica el suavizamiento (ts_transform), con el método antes descrito, vemos que el modelo tiende a ajustarse mejor al comportamiento original, aunque no del todo. 
+
+
+
 ```{r}
 
-# Graficar resultado y se descompone de acuerdo a sus caracteristicas
-plot(fitted(hw))
+# Configurar área de gráficos (2 filas, 1 columna)
+par(mfrow = c(2, 1), mar = c(4, 4, 2, 1))  # Ajustar márgenes
+
+# Gráfico del modelo original
+plot(fitted(hw), main = "Modelo Holt-Winters - Serie Original",
+     ylab = "Valores", xlab = "Tiempo")
+
+# Gráfico del modelo transformado
+plot(fitted(hwt), main = "Modelo Holt-Winters - Serie Transformada",
+     ylab = "Valores Transformados", xlab = "Tiempo")
+
+# Restaurar configuración gráfica
+par(mfrow = c(1, 1))
 ```
 
-Observed (Observada): La serie con el modelo Holt Winters presenta variaciones, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.
+- Observed (Observada): La serie con el modelo Holt Winters presenta variaciones, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.
 
-Trend (Tendencia): La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa al inicio de la semana y antes del fin de semana
+- Trend (Tendencia): La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa al inicio de la semana y antes del fin de semana
 
-Seasonal (Estacionalidad): La componente estacional es clara y bien definida, con un patrón cíclico semanal o cercano al semanal (como fue el caso de la descomposición diaria por día de la semana). Esto sugiere que existe un patrón repetitivo y consistente en el ausentismo, posiblemente relacionado con el inicio o fin de semana, en los que los niveles de ausentismo tienden a aumentar.
+- Seasonal (Estacionalidad): La componente estacional es clara y bien definida, con un patrón cíclico semanal o cercano al semanal (como fue el caso de la descomposición diaria por día de la semana). Esto sugiere que existe un patrón repetitivo y consistente en el ausentismo, posiblemente relacionado con el inicio o fin de semana, en los que los niveles de ausentismo tienden a aumentar.
 
-Random (Ruido aleatorio): El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Es de notar que comparado con los datos originales este metodo de suavizamiento disminuye el ruido presente en la serie
+- Random (Ruido aleatorio): El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Es de notar que comparado con los datos originales este metodo de suavizamiento disminuye el ruido presente en la serie
 
+
+### Predicción próximos 7 días
+
+A continuación se genera una predicción para los siguientes siete días usando los resultados del modelo. 
 
 ```{r}
 #Se realiza una predicion para los proximos 7 días
 pred=predict(hw, 7, prediction.interval = TRUE)
 pred
 ```
+Para finalizar se hace una visualización de los resultados obtenidos. 
+
 ```{r}
 #se visualizan los valores pronosticados para los proximos 7 dias
 plot(hw,pred)
 ```
 
-#Conclusion aplicacion metodologia Holt Winters
+# Conclución aplicacion metodología Holt-Winters
 
-La nueva serie de datos aplicando el metodo de suavizamiento exponencial permitio disminuir los picos  que se observaban en el  modelo original permitiendo disminuir el ruido y mostrando un modelo predictivo que apunta al ausentismo laboral en el comienzo y final de la semana
+La nueva serie de datos aplicando el método de suavizamiento exponencial permitio disminuir los picos  que se observaban en el  modelo original permitiendo disminuir el ruido y mostrando un modelo predictivo que apunta al ausentismo laboral en el comienzo y final de la semana.
