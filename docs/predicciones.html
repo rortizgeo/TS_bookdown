@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 3 Predicciones | Análisis de series temporales: Ausentismo laboral</title>
+  <meta name="description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
+  <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 3 Predicciones | Análisis de series temporales: Ausentismo laboral" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 3 Predicciones | Análisis de series temporales: Ausentismo laboral" />
+  
+  <meta name="twitter:description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
+  
+
+<meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
+
+
+<meta name="date" content="2025-05-11" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="análisis-de-los-datos.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html"><i class="fa fa-check"></i><b>1</b> AUSENTISMO LABORAL</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html#introducción"><i class="fa fa-check"></i><b>1.1</b> Introducción</a></li>
+<li class="chapter" data-level="1.2" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html#finalidad-del-estudio"><i class="fa fa-check"></i><b>1.2</b> Finalidad del estudio</a></li>
+<li class="chapter" data-level="1.3" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html#diseño-del-estudio"><i class="fa fa-check"></i><b>1.3</b> Diseño del estudio</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html"><i class="fa fa-check"></i><b>2</b> Análisis de los datos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#media-movil"><i class="fa fa-check"></i><b>2.1</b> Media Movil</a></li>
+<li class="chapter" data-level="2.2" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#rezagos"><i class="fa fa-check"></i><b>2.2</b> Rezagos</a></li>
+<li class="chapter" data-level="2.3" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#análísis-de-estacionalidad"><i class="fa fa-check"></i><b>2.3</b> Análísis de estacionalidad</a></li>
+<li class="chapter" data-level="2.4" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#descomposición-de-la-serie-temporal"><i class="fa fa-check"></i><b>2.4</b> Descomposición de la serie temporal</a></li>
+<li class="chapter" data-level="2.5" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#estacionariedad"><i class="fa fa-check"></i><b>2.5</b> Estacionariedad</a></li>
+<li class="chapter" data-level="2.6" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#diferenciación"><i class="fa fa-check"></i><b>2.6</b> Diferenciación</a></li>
+<li class="chapter" data-level="2.7" data-path="análisis-de-los-datos.html"><a href="análisis-de-los-datos.html#conclusión"><i class="fa fa-check"></i><b>2.7</b> Conclusión</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="predicciones.html"><a href="predicciones.html"><i class="fa fa-check"></i><b>3</b> Predicciones</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="predicciones.html"><a href="predicciones.html#método-holt-winters"><i class="fa fa-check"></i><b>3.1</b> Método Holt-Winters</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis de series temporales: Ausentismo laboral</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="predicciones" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Capítulo 3</span> Predicciones<a href="predicciones.html#predicciones" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="método-holt-winters" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Método Holt-Winters<a href="predicciones.html#método-holt-winters" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="predicciones.html#cb19-1" tabindex="-1"></a><span class="co">#Se instala libreria TSA</span></span>
+<span id="cb19-2"><a href="predicciones.html#cb19-2" tabindex="-1"></a><span class="fu">library</span>(TSA)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;TSA&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     acf, arima</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     tar</code></pre>
+<p>Cómo resultado del capítulo 2, se construyó una serie temporal diaria con frecuencia semanal (7 días), que comienza en la semana 1 del ciclo 1 y termina en la semana 53 del ciclo 1. Los valores tienen una distribución asimétrica con muchos ceros (25% de los datos son 0) pero con algunos valores muy altos (hasta 168).</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="predicciones.html#cb23-1" tabindex="-1"></a><span class="co">#Se verifican características de los datos</span></span>
+<span id="cb23-2"><a href="predicciones.html#cb23-2" tabindex="-1"></a><span class="fu">class</span>(ts_diaria)</span></code></pre></div>
+<pre><code>## [1] &quot;ts&quot;</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="predicciones.html#cb25-1" tabindex="-1"></a><span class="fu">start</span>(ts_diaria)</span></code></pre></div>
+<pre><code>## [1] 1 1</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="predicciones.html#cb27-1" tabindex="-1"></a><span class="fu">end</span>(ts_diaria)</span></code></pre></div>
+<pre><code>## [1] 53  1</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="predicciones.html#cb29-1" tabindex="-1"></a><span class="fu">frequency</span>(ts_diaria)</span></code></pre></div>
+<pre><code>## [1] 7</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="predicciones.html#cb31-1" tabindex="-1"></a><span class="fu">summary</span>(ts_diaria)</span></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00    0.00    7.00   14.04   16.00  168.00</code></pre>
+<p>El siguiente gráfico muestra que los datos presentan un comportamiento errático con valores altos de ausentimos en algunas semanas. Sin embargo, la línea generada no muestra una tendencia hacía el aumento o disminución.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="predicciones.html#cb33-1" tabindex="-1"></a><span class="co">#Observamos la tendencia y los ciclos</span></span>
+<span id="cb33-2"><a href="predicciones.html#cb33-2" tabindex="-1"></a><span class="fu">plot</span>(ts_diaria)</span>
+<span id="cb33-3"><a href="predicciones.html#cb33-3" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">reg =</span> <span class="fu">lm</span>(ts_diaria<span class="sc">~</span><span class="fu">time</span>(ts_diaria)))</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>Para analizar el comportamiento de los datos se intenta realizar una transformación logarítmica. Sin embargo, debido a que la variable de ausencia tiene valores de 0, esta transformación no es posible ya que cuando se trabaja con series temporales donde la variable objetivo contiene ceros, las transformaciones tradicionales como el logaritmo fallan porque log(0) = -∞</p>
+<p>En ese sentido, se debe recurrir a otro tipo de transformación que no genere modificaciones profundas en los datos, para ello, se hace uso de una técnica</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="predicciones.html#cb34-1" tabindex="-1"></a><span class="co"># Versión optimizada (encontrar c óptimo)</span></span>
+<span id="cb34-2"><a href="predicciones.html#cb34-2" tabindex="-1"></a>c_opt <span class="ot">&lt;-</span> <span class="fu">min</span>(ts_diaria[ts_diaria <span class="sc">&gt;</span> <span class="dv">0</span>])<span class="sc">/</span><span class="dv">2</span>  <span class="co"># Mitad del valor mínimo positivo</span></span>
+<span id="cb34-3"><a href="predicciones.html#cb34-3" tabindex="-1"></a>ts_transf <span class="ot">&lt;-</span> <span class="fu">log</span>(ts_diaria <span class="sc">+</span> c_opt)</span>
+<span id="cb34-4"><a href="predicciones.html#cb34-4" tabindex="-1"></a></span>
+<span id="cb34-5"><a href="predicciones.html#cb34-5" tabindex="-1"></a><span class="co">#Se usa funcion logaritmica para visualizar los datos</span></span>
+<span id="cb34-6"><a href="predicciones.html#cb34-6" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(ts_transf))</span></code></pre></div>
+<pre><code>## Warning in log(ts_transf): NaNs produced</code></pre>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-20-1.png" width="672" />
+Una desventaja de esta transformación es que puede crear un “hueco” artificial entre los ceros transformados y los valores pequeños positivos como se muestra en el gráfico. Adicionalmente, los coeficientes en modelos ajustados a datos transformados requieren interpretación cuidadosa. Sin embargo estos “huecos” son una representación fiel de la discontinuidad matemática entre cero y valores positivos, además de un indicador visual de la presencia de ceros en los datos originales que puede ser una propiedad deseable en muchos casos, ya que marca claramente la diferencia entre “cero” y “casi cero”.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="predicciones.html#cb36-1" tabindex="-1"></a><span class="co">#Se crea una nueva serie de datos muy cerca de los datos originales</span></span>
+<span id="cb36-2"><a href="predicciones.html#cb36-2" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="predicciones.html#cb36-3" tabindex="-1"></a><span class="co"># Configurar área de gráfico con 2 filas y 1 columna</span></span>
+<span id="cb36-4"><a href="predicciones.html#cb36-4" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))  <span class="co"># márgenes ajustados</span></span>
+<span id="cb36-5"><a href="predicciones.html#cb36-5" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="predicciones.html#cb36-6" tabindex="-1"></a><span class="co"># Primera gráfica (serie original)</span></span>
+<span id="cb36-7"><a href="predicciones.html#cb36-7" tabindex="-1"></a>hw <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(ts_diaria)</span>
+<span id="cb36-8"><a href="predicciones.html#cb36-8" tabindex="-1"></a><span class="fu">plot</span>(hw, <span class="at">main =</span> <span class="st">&quot;Suavizamiento Holt-Winters - Serie Original&quot;</span>)</span>
+<span id="cb36-9"><a href="predicciones.html#cb36-9" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="predicciones.html#cb36-10" tabindex="-1"></a><span class="co"># Segunda gráfica (serie transformada)</span></span>
+<span id="cb36-11"><a href="predicciones.html#cb36-11" tabindex="-1"></a>hwt <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(ts_transf)</span>
+<span id="cb36-12"><a href="predicciones.html#cb36-12" tabindex="-1"></a><span class="fu">plot</span>(hwt, <span class="at">main =</span> <span class="st">&quot;Suavizamiento Holt-Winters - Serie Transformada&quot;</span>)</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="predicciones.html#cb37-1" tabindex="-1"></a><span class="co"># Restaurar configuración gráfica</span></span>
+<span id="cb37-2"><a href="predicciones.html#cb37-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="predicciones.html#cb38-1" tabindex="-1"></a><span class="co"># Graficar resultado y se descompone de acuerdo a sus caracteristicas</span></span>
+<span id="cb38-2"><a href="predicciones.html#cb38-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(hw))</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>Observed (Observada): La serie con el modelo Holt Winters presenta variaciones, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.</p>
+<p>Trend (Tendencia): La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa al inicio de la semana y antes del fin de semana</p>
+<p>Seasonal (Estacionalidad): La componente estacional es clara y bien definida, con un patrón cíclico semanal o cercano al semanal (como fue el caso de la descomposición diaria por día de la semana). Esto sugiere que existe un patrón repetitivo y consistente en el ausentismo, posiblemente relacionado con el inicio o fin de semana, en los que los niveles de ausentismo tienden a aumentar.</p>
+<p>Random (Ruido aleatorio): El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Es de notar que comparado con los datos originales este metodo de suavizamiento disminuye el ruido presente en la serie</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="predicciones.html#cb39-1" tabindex="-1"></a><span class="co">#Se realiza una predicion para los proximos 7 días</span></span>
+<span id="cb39-2"><a href="predicciones.html#cb39-2" tabindex="-1"></a>pred<span class="ot">=</span><span class="fu">predict</span>(hw, <span class="dv">7</span>, <span class="at">prediction.interval =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb39-3"><a href="predicciones.html#cb39-3" tabindex="-1"></a>pred</span></code></pre></div>
+<pre><code>## Time Series:
+## Start = c(53, 2) 
+## End = c(54, 1) 
+## Frequency = 7 
+##                 fit      upr       lwr
+## 53.14286 27.4334029 74.75449 -19.88768
+## 53.28571 16.6943222 64.10558 -30.71693
+## 53.42857  8.5784673 56.08471 -38.92778
+## 53.57143 10.6400895 58.24624 -36.96606
+## 53.71429 -0.8931247 46.81796 -48.60421
+## 53.85714 -0.9199175 46.90122 -48.74106
+## 54.00000 26.4335818 74.37000 -21.50283</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="predicciones.html#cb41-1" tabindex="-1"></a><span class="co">#se visualizan los valores pronosticados para los proximos 7 dias</span></span>
+<span id="cb41-2"><a href="predicciones.html#cb41-2" tabindex="-1"></a><span class="fu">plot</span>(hw,pred)</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>#Conclusion aplicacion metodologia Holt Winters</p>
+<p>La nueva serie de datos aplicando el metodo de suavizamiento exponencial permitio disminuir los picos que se observaban en el modelo original permitiendo disminuir el ruido y mostrando un modelo predictivo que apunta al ausentismo laboral en el comienzo y final de la semana</p>
+
+<p>.</p>
+
+<p>.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="análisis-de-los-datos.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/rstudio/bookdown-demo/edit/master/03-method.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>

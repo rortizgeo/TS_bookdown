@@ -11,3 +11,5 @@ descomposición-de-la-serie-temporal
 estacionariedad
 diferenciación
 conclusión
+predicciones
+método-holt-winters
