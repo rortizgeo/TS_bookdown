@@ -14,4 +14,4 @@ conclusión
 predicciones
 método-holt-winters
 predicción-próximos-7-días
-conclución-aplicacion-metodología-holt-winters
+conclusión-aplicacion-metodología-holt-winters
