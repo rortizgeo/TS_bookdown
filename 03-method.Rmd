@@ -107,6 +107,6 @@ plot(hw,pred)
 
 En este ultimo grafico se observa en negro la serie real y en rojo la previsto., la barra punteada  es la ventana pronosticada para los próximos 7 días. Al trazar cada pronóstico más adelante, se puede ver que el método de Holt muestra claramente la captura de un componente de tendencia.
 
-# Conclusión aplicacion metodología Holt-Winters
+### Conclusión aplicacion metodología Holt-Winters
 
 La metodología Holt-Winters es una técnica de pronóstico  que captura de manera efectiva las tendencias y la estacionalidad en los datos de series temporales. En la base de datos de Ausentismo se concluye que la nueva serie de datos aplicando el método de suavizamiento exponencial permitió disminuir los picos  que se observaban en el  modelo original permitiendo disminuir el ruido y mostrando un modelo predictivo que apunta al ausentismo laboral en el comienzo y final de la semana. En este ejemplo especifico al aplicar la metodología se esboza un componente de tendencia y se determina un patrón de estacionalidad para el ausentismo presente en la serie de tiempo entre julio de 2007 a julio de 2010.
