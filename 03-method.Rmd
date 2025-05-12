@@ -105,7 +105,8 @@ Para finalizar se hace una visualización de los resultados obtenidos.
 plot(hw,pred)
 ```
 
-En este ultimo grafico se observa en negro la serie real y en rojo la previsto., la barra punteada  es la ventana pronosticada para los próximos 7 días. Al trazar cada pronóstico más adelante, se puede ver que el método de Holt muestra claramente la captura de un componente de tendencia.
+En este último gráfico se observa en negro la serie real y en rojo la previsto, la barra punteada  es la ventana pronosticada para los próximos 7 días. Al trazar cada pronóstico, se puede ver que el método de Holt muestra claramente la captura de un componente de tendencia.
+
 
 ## Conclusión aplicacion metodología Holt-Winters
 

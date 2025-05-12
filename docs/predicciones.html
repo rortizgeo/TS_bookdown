@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="análisis-de-los-datos.html"/>
-<link rel="next" href="conclusión-aplicacion-metodología-holt-winters.html"/>
+<link rel="next" href="references.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -162,12 +162,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="3" data-path="predicciones.html"><a href="predicciones.html"><i class="fa fa-check"></i><b>3</b> Predicciones</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="predicciones.html"><a href="predicciones.html#método-holt-winters"><i class="fa fa-check"></i><b>3.1</b> Método Holt-Winters</a>
-<ul>
-<li class="chapter" data-level="3.1.1" data-path="predicciones.html"><a href="predicciones.html#predicción-próximos-7-días"><i class="fa fa-check"></i><b>3.1.1</b> Predicción próximos 7 días</a></li>
+<li class="chapter" data-level="3.1" data-path="predicciones.html"><a href="predicciones.html#método-holt-winters"><i class="fa fa-check"></i><b>3.1</b> Método Holt-Winters</a></li>
+<li class="chapter" data-level="3.2" data-path="predicciones.html"><a href="predicciones.html#predicción-próximos-7-días"><i class="fa fa-check"></i><b>3.2</b> Predicción próximos 7 días</a></li>
+<li class="chapter" data-level="3.3" data-path="predicciones.html"><a href="predicciones.html#conclusión-aplicacion-metodología-holt-winters"><i class="fa fa-check"></i><b>3.3</b> Conclusión aplicacion metodología Holt-Winters</a></li>
 </ul></li>
-</ul></li>
-<li class="chapter" data-level="4" data-path="conclusión-aplicacion-metodología-holt-winters.html"><a href="conclusión-aplicacion-metodología-holt-winters.html"><i class="fa fa-check"></i><b>4</b> Conclusión aplicacion metodología Holt-Winters</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -249,8 +247,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>Seasonal (Estacionalidad): La componente estacional es clara y bien definida, con un patrón cíclico semanal o cercano al semanal (como fue el caso de la descomposición diaria por día de la semana). Esto sugiere que existe un patrón repetitivo y consistente en el ausentismo, posiblemente relacionado con el inicio o fin de semana, en los que los niveles de ausentismo tienden a aumentar.</p></li>
 <li><p>Random (Ruido aleatorio): El componente aleatorio muestra picos aislados, lo que indica eventos impredecibles que no pueden explicarse ni por la tendencia ni por la estacionalidad. Es de notar que comparado con los datos originales este metodo de suavizamiento disminuye el ruido presente en la serie</p></li>
 </ul>
-<div id="predicción-próximos-7-días" class="section level3 hasAnchor" number="3.1.1">
-<h3><span class="header-section-number">3.1.1</span> Predicción próximos 7 días<a href="predicciones.html#predicción-próximos-7-días" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+<div id="predicción-próximos-7-días" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Predicción próximos 7 días<a href="predicciones.html#predicción-próximos-7-días" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A continuación se genera una predicción para los siguientes siete días usando los resultados del modelo.</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="predicciones.html#cb34-1" tabindex="-1"></a><span class="co">#Se realiza una predicion para los proximos 7 días</span></span>
 <span id="cb34-2"><a href="predicciones.html#cb34-2" tabindex="-1"></a>pred<span class="ot">=</span><span class="fu">predict</span>(hw, <span class="dv">7</span>, <span class="at">prediction.interval =</span> <span class="cn">TRUE</span>)</span>
@@ -271,8 +270,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="predicciones.html#cb36-1" tabindex="-1"></a><span class="co">#se visualizan los valores pronosticados para los proximos 7 dias</span></span>
 <span id="cb36-2"><a href="predicciones.html#cb36-2" tabindex="-1"></a><span class="fu">plot</span>(hw,pred)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<p>En este ultimo grafico se observa en negro la serie real y en rojo la previsto., la barra punteada es la ventana pronosticada para los próximos 7 días. Al trazar cada pronóstico más adelante, se puede ver que el método de Holt muestra claramente la captura de un componente de tendencia.</p>
+<p>En este último gráfico se observa en negro la serie real y en rojo la previsto, la barra punteada es la ventana pronosticada para los próximos 7 días. Al trazar cada pronóstico, se puede ver que el método de Holt muestra claramente la captura de un componente de tendencia.</p>
 </div>
+<div id="conclusión-aplicacion-metodología-holt-winters" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Conclusión aplicacion metodología Holt-Winters<a href="predicciones.html#conclusión-aplicacion-metodología-holt-winters" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>La metodología Holt-Winters es una técnica de pronóstico que captura de manera efectiva las tendencias y la estacionalidad en los datos de series temporales. En la base de datos de Ausentismo se concluye que la nueva serie de datos aplicando el método de suavizamiento exponencial permitió disminuir los picos que se observaban en el modelo original permitiendo disminuir el ruido y mostrando un modelo predictivo que apunta al ausentismo laboral en el comienzo y final de la semana. En este ejemplo especifico al aplicar la metodología se esboza un componente de tendencia y se determina un patrón de estacionalidad para el ausentismo presente en la serie de tiempo entre julio de 2007 a julio de 2010.</p>
+
+<p>.</p>
+
+<p>.</p>
+
 </div>
 </div>
             </section>
@@ -281,7 +288,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="análisis-de-los-datos.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="conclusión-aplicacion-metodología-holt-winters.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
