@@ -1,1 +1,74 @@
-.
+
+# Modelo ARIMA
+
+
+El modelo ARIMA (AutoRegressive Integrated Moving Average) es una herramienta estadística utilizada para modelar y predecir series de tiempo univariadas. Su nombre proviene de los tres componentes principales que lo conforman:
+
+- _AR (AutoRegresivo)_: Indica que la variable dependiente se explica por sus propios valores pasados.
+- _I (Integrado)_: Se refiere al número de diferenciaciones necesarias para que la serie se vuelva estacionaria.
+- _MA (Media Móvil)_: Representa la dependencia entre el valor actual de la serie y los errores residuales pasados.
+
+El modelo ARIMA se denota como ARIMA (p, d, q), donde:
+
+- p: número de términos autorregresivos (AR).
+- d: número de diferencias requeridas para hacer estacionaria la serie.
+- q: número de términos de media móvil (MA).
+
+Para que un modelo ARIMA sea válido, es necesario que se cumplan ciertos supuestos fundamentales. En primer lugar, la serie de tiempo debe ser estacionaria, lo que implica que sus propiedades estadísticas, como la media, la varianza y la covarianza, se mantengan constantes a lo largo del tiempo. En caso de que la serie no sea estacionaria, debe poder transformarse en una serie estacionaria mediante procedimientos como la diferenciación. En segundo lugar, se requiere que los residuos del modelo —es decir, las diferencias entre los valores observados y los estimados— se comporten como ruido blanco. Esto significa que deben ser aleatorios, con media cero, varianza constante y sin correlación entre ellos. El cumplimiento de estos supuestos es esencial para garantizar la validez de las inferencias y pronósticos derivados del modelo ARIMA.
+
+Partiendo de los resultado del capítulo 2, se estableció que la serie de tiempo asociada al caso de ausentismo es estacionaria según el resultado del test Dickey-Fuller. A continuación se aplica el modelo Arima 
+
+
+
+```{r}
+modelo_arima<-auto.arima(ts_diaria)
+modelo_arima
+
+```
+Se requiere que los residuos del modelo —es decir, las diferencias entre los valores observados y los estimados— se comporten como ruido blanco. Esto significa que deben ser aleatorios, con media cero, varianza constante y sin correlación entre ellos. El cumplimiento de estos supuestos es esencial para garantizar la validez de las inferencias y pronósticos derivados del modelo ARIMA.
+
+
+Para comprobar si los residuos de un modelo ARIMA  aplicado a ausentismo laboral, se comportan como ruido blanco se grafican los residuos y la función de autocorrelación ACF, como se muestra a continuación.
+
+```{r}
+residuos <- residuals(modelo_arima)
+plot(residuos, main = "Residuos del modelo ARIMA", ylab = "Residuos")
+acf(residuos, main = "ACF de los residuos")
+```
+
+
+```{r}
+mval<-cpt.mean(ts_diaria,method = "AMOC") 
+cpts(mval)
+```
+
+```{r}
+plot(mval, type = "l", cpt.col = "blue", xlab = "Value", cpt.width = 4, main = "default penalty")
+```
+
+```{r}
+pred<-forecast(ts_diaria,h=12)
+pred
+
+```
+
+```{r}
+plot(pred, main=" ", ylab="Horas", col="deepskyblue", xlab="Días")
+title(main="Predicción de Ausentismo laboral")
+
+```
+
+
+```{r}
+ 
+dat.ts<- ts(ts_diaria,frequency=1) 
+data.ts.outliers <- tso(dat.ts)
+plot(data.ts.outliers)
+
+```
+
+
+```{r}
+
+```
+

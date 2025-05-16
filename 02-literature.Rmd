@@ -16,7 +16,11 @@ library(xts)
 library(kableExtra)
 library(magrittr)
 library(TSA)
-
+library(forecast)
+library(timsac)
+library(changepoint)
+#install.packages("tsoutliers")
+library(tsoutliers)
 ```
 
 
