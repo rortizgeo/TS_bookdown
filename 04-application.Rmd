@@ -25,8 +25,11 @@ modelo_arima<-auto.arima(ts_diaria)
 modelo_arima
 
 ```
-Se requiere que los residuos del modelo —es decir, las diferencias entre los valores observados y los estimados— se comporten como ruido blanco. Esto significa que deben ser aleatorios, con media cero, varianza constante y sin correlación entre ellos. El cumplimiento de estos supuestos es esencial para garantizar la validez de las inferencias y pronósticos derivados del modelo ARIMA.
+Usando la notación ARIMA el modelo ajustado se puede escribir como:
 
+Yd=0.0992 Yt−1+0.1259 Yt−2+13.9487et−1+E
+
+Se requiere que los residuos del modelo —es decir, las diferencias entre los valores observados y los estimados— se comporten como ruido blanco. Esto significa que deben ser aleatorios, con media cero, varianza constante y sin correlación entre ellos. El cumplimiento de estos supuestos es esencial para garantizar la validez de las inferencias y pronósticos derivados del modelo ARIMA.
 
 Para comprobar si los residuos de un modelo ARIMA  aplicado a ausentismo laboral, se comportan como ruido blanco se grafican los residuos y la función de autocorrelación ACF, como se muestra a continuación.
 
@@ -35,7 +38,7 @@ residuos <- residuals(modelo_arima)
 plot(residuos, main = "Residuos del modelo ARIMA", ylab = "Residuos")
 acf(residuos, main = "ACF de los residuos")
 ```
-
+La función de autocorrelación (ACF): mide la correlación entre una serie de tiempo y sus valores retrasados. La autocorrelacion proporciona información de como una observación del ausentismo influye en las siguientes observaciones. Al trazar esta serie diferenciada, se observa un patrón oscilante al rededor de 0, sin una tendencia fuerte visible. Para determinar el valor de q en un modelo ARIMA, se puede mirar el gráfico ACF y buscar el primer retraso que tiene una correlación significativa (es decir en donde se sobrepasen las lineas punteadas. En esta grafica se observa  un Lag relevante de 3. esto ayuda a determinar  el q del modelo de ausentismo laboral observandose que en estos primeros rezagos se evidencia una correlación significativa no decreciente o convergente a cero.
 
 ```{r}
 mval<-cpt.mean(ts_diaria,method = "AMOC") 
@@ -45,6 +48,7 @@ cpts(mval)
 ```{r}
 plot(mval, type = "l", cpt.col = "blue", xlab = "Value", cpt.width = 4, main = "default penalty")
 ```
+Estos son los datos de ausentismo laboral proyectados para los siguientes 12 días utilizando el paquete forecast para la serie diaria.
 
 ```{r}
 pred<-forecast(ts_diaria,h=12)
@@ -57,7 +61,7 @@ plot(pred, main=" ", ylab="Horas", col="deepskyblue", xlab="Días")
 title(main="Predicción de Ausentismo laboral")
 
 ```
-
+En esta grafica se especificar el horizonte de pronóstico h periodos por delante para que se realicen las predicciones de ausentismo laboral
 
 ```{r}
  
@@ -67,8 +71,20 @@ plot(data.ts.outliers)
 
 ```
 
+Para la validacion del modelo se analiza que los residuos sean _Ruido Blanco_, es decir, que los residuos se distribuyen normalmente y no hay autocorrelación entre ellos. Para ello, se aplica la prueba de Shapiro para normalidad y la de  Ljung-Box para mirar si los residuales cumplen el supuesto de independencia o estan autocorrelacionados
+
 
 ```{r}
-
+shapiro.test(residuos)
 ```
 
+```{r}
+Box.test(residuos, type = "Ljung-Box")
+```
+
+Con la prueba de Ljung-Box, se evalúa si hay o no autocorrelación en los residuos:
+
+- Hipótesis H0: No hay autocorrelación de los residuos 
+- H1: Existe autocorrelación de los residuos
+
+Como el P-value (0.1791) es mayor a 0.05 no se rechaza H0. En ese caso si se cumple la condición de los residuos, son ruido blanco (no se correlacionan los errores).

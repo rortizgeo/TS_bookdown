@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-05-16" />
+<meta name="date" content="2025-05-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -216,18 +216,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 
 ## sigma^2 = 603.5:  log likelihood = -1685.04
 ## AIC=3378.08   AICc=3378.19   BIC=3393.68</code></pre>
+<p>Usando la notación ARIMA el modelo ajustado se puede escribir como:</p>
+<p>Yd=0.0992 Yt−1+0.1259 Yt−2+13.9487et−1+E</p>
 <p>Se requiere que los residuos del modelo —es decir, las diferencias entre los valores observados y los estimados— se comporten como ruido blanco. Esto significa que deben ser aleatorios, con media cero, varianza constante y sin correlación entre ellos. El cumplimiento de estos supuestos es esencial para garantizar la validez de las inferencias y pronósticos derivados del modelo ARIMA.</p>
 <p>Para comprobar si los residuos de un modelo ARIMA aplicado a ausentismo laboral, se comportan como ruido blanco se grafican los residuos y la función de autocorrelación ACF, como se muestra a continuación.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="modelo-arima.html#cb39-1" tabindex="-1"></a>residuos <span class="ot">&lt;-</span> <span class="fu">residuals</span>(modelo_arima)</span>
 <span id="cb39-2"><a href="modelo-arima.html#cb39-2" tabindex="-1"></a><span class="fu">plot</span>(residuos, <span class="at">main =</span> <span class="st">&quot;Residuos del modelo ARIMA&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Residuos&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="modelo-arima.html#cb40-1" tabindex="-1"></a><span class="fu">acf</span>(residuos, <span class="at">main =</span> <span class="st">&quot;ACF de los residuos&quot;</span>)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-25-2.png" width="672" /></p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-25-2.png" width="672" />
+La función de autocorrelación (ACF): mide la correlación entre una serie de tiempo y sus valores retrasados. La autocorrelacion proporciona información de como una observación del ausentismo influye en las siguientes observaciones. Al trazar esta serie diferenciada, se observa un patrón oscilante al rededor de 0, sin una tendencia fuerte visible. Para determinar el valor de q en un modelo ARIMA, se puede mirar el gráfico ACF y buscar el primer retraso que tiene una correlación significativa (es decir en donde se sobrepasen las lineas punteadas. En esta grafica se observa un Lag relevante de 3. esto ayuda a determinar el q del modelo de ausentismo laboral observandose que en estos primeros rezagos se evidencia una correlación significativa no decreciente o convergente a cero.</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="modelo-arima.html#cb41-1" tabindex="-1"></a>mval<span class="ot">&lt;-</span><span class="fu">cpt.mean</span>(ts_diaria,<span class="at">method =</span> <span class="st">&quot;AMOC&quot;</span>) </span>
 <span id="cb41-2"><a href="modelo-arima.html#cb41-2" tabindex="-1"></a><span class="fu">cpts</span>(mval)</span></code></pre></div>
 <pre><code>## [1] 63</code></pre>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="modelo-arima.html#cb43-1" tabindex="-1"></a><span class="fu">plot</span>(mval, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">cpt.col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Value&quot;</span>, <span class="at">cpt.width =</span> <span class="dv">4</span>, <span class="at">main =</span> <span class="st">&quot;default penalty&quot;</span>)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-27-1.png" width="672" />
+Estos son los datos de ausentismo laboral proyectados para los siguientes 12 días utilizando el paquete forecast para la serie diaria.</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="modelo-arima.html#cb44-1" tabindex="-1"></a>pred<span class="ot">&lt;-</span><span class="fu">forecast</span>(ts_diaria,<span class="at">h=</span><span class="dv">12</span>)</span>
 <span id="cb44-2"><a href="modelo-arima.html#cb44-2" tabindex="-1"></a>pred</span></code></pre></div>
 <pre><code>##          Point Forecast        Lo 80    Hi 80     Lo 95    Hi 95
@@ -245,7 +249,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 54.71429      -1.257420 -30.73737889 28.22254 -46.34313 43.82829</code></pre>
 <div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="modelo-arima.html#cb46-1" tabindex="-1"></a><span class="fu">plot</span>(pred, <span class="at">main=</span><span class="st">&quot; &quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Horas&quot;</span>, <span class="at">col=</span><span class="st">&quot;deepskyblue&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Días&quot;</span>)</span>
 <span id="cb46-2"><a href="modelo-arima.html#cb46-2" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">&quot;Predicción de Ausentismo laboral&quot;</span>)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-29-1.png" width="672" />
+En esta grafica se especificar el horizonte de pronóstico h periodos por delante para que se realicen las predicciones de ausentismo laboral</p>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="modelo-arima.html#cb47-1" tabindex="-1"></a>dat.ts<span class="ot">&lt;-</span> <span class="fu">ts</span>(ts_diaria,<span class="at">frequency=</span><span class="dv">1</span>) </span>
 <span id="cb47-2"><a href="modelo-arima.html#cb47-2" tabindex="-1"></a>data.ts.outliers <span class="ot">&lt;-</span> <span class="fu">tso</span>(dat.ts)</span></code></pre></div>
 <pre><code>## Warning in locate.outliers.iloop(resid = resid, pars = pars, cval = cval, :
@@ -256,6 +261,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## : stopped when &#39;maxit.oloop = 4&#39; was reached</code></pre>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="modelo-arima.html#cb50-1" tabindex="-1"></a><span class="fu">plot</span>(data.ts.outliers)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p>Para la validacion del modelo se analiza que los residuos sean <em>Ruido Blanco</em>, es decir, que los residuos se distribuyen normalmente y no hay autocorrelación entre ellos. Para ello, se aplica la prueba de Shapiro para normalidad y la de Ljung-Box para mirar si los residuales cumplen el supuesto de independencia o estan autocorrelacionados</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="modelo-arima.html#cb51-1" tabindex="-1"></a><span class="fu">shapiro.test</span>(residuos)</span></code></pre></div>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuos
+## W = 0.56838, p-value &lt; 2.2e-16</code></pre>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="modelo-arima.html#cb53-1" tabindex="-1"></a><span class="fu">Box.test</span>(residuos, <span class="at">type =</span> <span class="st">&quot;Ljung-Box&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+##  Box-Ljung test
+## 
+## data:  residuos
+## X-squared = 1.8052, df = 1, p-value = 0.1791</code></pre>
+<p>Con la prueba de Ljung-Box, se evalúa si hay o no autocorrelación en los residuos:</p>
+<ul>
+<li>Hipótesis H0: No hay autocorrelación de los residuos</li>
+<li>H1: Existe autocorrelación de los residuos</li>
+</ul>
+<p>Como el P-value (0.1791) es mayor a 0.05 no se rechaza H0. En ese caso si se cumple la condición de los residuos, son ruido blanco (no se correlacionan los errores).</p>
 
 <p>.</p>
 
