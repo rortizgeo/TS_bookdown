@@ -272,8 +272,8 @@ La función de autocorrelación (ACF): mide la correlación entre una serie de t
 <pre><code>## [1] 63</code></pre>
 <p>El resultado muestra que la serie ts_diaria tiene una ruptura (cambio estructural) en el valor medio en el dato número 63. Esto sugiere que antes y después de ese punto, los valores de la serie tienen medias significativamente diferentes. El método “AMOC” busca una única ruptura (At Most One Change), y detectó que la mejor ubicación para dividir la serie en dos segmentos con medias distintas es en el punto 63. A continuación se gráfica el resultado para ver el punto de ruptura.</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="modelo-arima.html#cb45-1" tabindex="-1"></a><span class="fu">plot</span>(mval, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">cpt.col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Value&quot;</span>, <span class="at">cpt.width =</span> <span class="dv">4</span>, <span class="at">main =</span> <span class="st">&quot;default penalty&quot;</span>)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-28-1.png" width="672" />
-La gráfica muestra la serie con una línea vertical en el punto donde ocurre el cambio, y líneas horizontales indicando las medias antes y después. En este caso el valor 63 de la serie corresponde a la fecha: 2007-03-04, indicando un cambio significatoco en este día. Esta información puede ayudar a decidir si necesitas transformar o dividir la serie antes de ajustar un modelo ARIMA.</p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>La gráfica muestra la serie con una línea vertical en el punto donde ocurre el cambio, y líneas horizontales indicando las medias antes y después. En este caso el valor 63 de la serie corresponde a la fecha: 2007-03-04, indicando un cambio significatoco en este día. Esta información puede ayudar a decidir si necesitas transformar o dividir la serie antes de ajustar un modelo ARIMA.</p>
 </div>
 <div id="predicción" class="section level2 hasAnchor" number="4.4">
 <h2><span class="header-section-number">4.4</span> Predicción<a href="modelo-arima.html#predicción" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -295,8 +295,8 @@ La gráfica muestra la serie con una línea vertical en el punto donde ocurre el
 ## 54.71429      -1.257420 -30.73737889 28.22254 -46.34313 43.82829</code></pre>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="modelo-arima.html#cb48-1" tabindex="-1"></a><span class="fu">plot</span>(pred, <span class="at">main=</span><span class="st">&quot; &quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Horas&quot;</span>, <span class="at">col=</span><span class="st">&quot;deepskyblue&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Días&quot;</span>)</span>
 <span id="cb48-2"><a href="modelo-arima.html#cb48-2" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">&quot;Predicción de Ausentismo laboral&quot;</span>)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-30-1.png" width="672" />
-En esta grafica se especificar el horizonte de pronóstico de h periodos por delante para que se realicen las predicciones de ausentismo laboral. En este caso correspondiente a 12 días. En una análisis visual inicial, la predicción parace guardar concordancia con el pronóstico del resto de la serie.</p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p>En esta grafica se especificar el horizonte de pronóstico de h periodos por delante para que se realicen las predicciones de ausentismo laboral. En este caso correspondiente a 12 días. En una análisis visual inicial, la predicción parace guardar concordancia con el pronóstico del resto de la serie.</p>
 <p>A continuación se hace un análisis de los valores atípicos en la serie</p>
 <p>La función tso() busca outliers que afecten la estructura de la serie, especialmente aquellos que pueden influir negativamente en el ajuste de modelos ARIMA. Identifica:</p>
 <ul>
@@ -313,8 +313,8 @@ En esta grafica se especificar el horizonte de pronóstico de h periodos por del
 <pre><code>## Warning in locate.outliers.oloop(y = y, fit = fit, types = types, cval = cval,
 ## : stopped when &#39;maxit.oloop = 4&#39; was reached</code></pre>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="modelo-arima.html#cb52-1" tabindex="-1"></a><span class="fu">plot</span>(data.ts.outliers)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-31-1.png" width="672" />
-En el gráfico se observa:</p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p>En el gráfico se observa:</p>
 <ul>
 <li><em>Línea gris</em>: serie original (ts_diaria), sin ajuste.</li>
 <li><em>Línea azul</em>: serie ajustada tras identificar y corregir los outliers.</li>

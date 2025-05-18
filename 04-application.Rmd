@@ -90,6 +90,7 @@ El resultado muestra que la serie ts_diaria tiene una ruptura (cambio estructura
 ```{r}
 plot(mval, type = "l", cpt.col = "blue", xlab = "Value", cpt.width = 4, main = "default penalty")
 ```
+
 La gráfica muestra la serie con una línea vertical en el punto donde ocurre el cambio, y líneas horizontales indicando las medias antes y después. En este caso el valor 63 de la serie corresponde a la fecha: 2007-03-04, indicando un cambio significatoco en este día. Esta información puede ayudar a decidir si necesitas transformar o dividir la serie antes de ajustar un modelo ARIMA.
 
 ## Predicción
@@ -107,6 +108,7 @@ plot(pred, main=" ", ylab="Horas", col="deepskyblue", xlab="Días")
 title(main="Predicción de Ausentismo laboral")
 
 ```
+
 En esta grafica se especificar el horizonte de pronóstico de h periodos por delante para que se realicen las predicciones de ausentismo laboral. En este caso correspondiente a 12 días. En una análisis visual inicial, la predicción parace guardar concordancia con el pronóstico del resto de la serie.
 
 A continuación se hace un análisis de los valores atípicos en la serie 
@@ -124,6 +126,7 @@ data.ts.outliers <- tso(dat.ts)
 plot(data.ts.outliers)
 
 ```
+
 En el gráfico se observa:
    
 - _Línea gris_: serie original (ts_diaria), sin ajuste.
