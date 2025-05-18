@@ -18,16 +18,35 @@ Para que un modelo ARIMA sea válido, es necesario que se cumplan ciertos supues
 
 Partiendo de los resultado del capítulo 2, se estableció que la serie de tiempo asociada al caso de ausentismo es estacionaria según el resultado del test Dickey-Fuller. A continuación se aplica el modelo Arima 
 
-
+## Generación del modelo
 
 ```{r}
 modelo_arima<-auto.arima(ts_diaria)
 modelo_arima
 
 ```
+A continuación vamos a explicar los resultados del modelo ARIMA: 
+
+
+ARIMA(0,0,0) → Componente no estacional:
+
+- p=0: no hay términos autorregresivos.
+- d=0: no se aplicó diferenciación (la serie ya era estacionaria).
+- q=0: no hay términos de media móvil no estacionales.
+
+(0,0,2)[7] → Componente estacional con periodicidad 7 (Días de la semana) indicando un P=0, D=0, Q=2. Es decir, que hay dos términos de media móvil estacional.
+
+- En ese caso el valor 7 indica que se detectó una estacionalidad semanal, común en datos diarios con patrón semanal como el ausentismo laboral.
+- with non-zero mean: Indica que el modelo incluye una constante, es decir, la serie tiene una media distinta de cero.
+
+
 Usando la notación ARIMA el modelo ajustado se puede escribir como:
 
 Yd=0.0992 Yt−1+0.1259 Yt−2+13.9487et−1+E
+
+Este modelo detecta un patrón semanal en la serie de ausentismo, lo que tiene sentido si hay diferencias sistemáticas entre días de la semana (como más ausencias los lunes que los viernes, según lo observado en capítulos anteriores). No se encontraron tendencias o ciclos no estacionales, y la serie fue tratada como estacionaria desde el inicio. Si los residuos del modelo pasan las pruebas de diagnóstico (como Ljung-Box), podría considerarse como un modelo adecuado para pronóstico.
+
+## Análisis de los residuos
 
 Se requiere que los residuos del modelo —es decir, las diferencias entre los valores observados y los estimados— se comporten como ruido blanco. Esto significa que deben ser aleatorios, con media cero, varianza constante y sin correlación entre ellos. El cumplimiento de estos supuestos es esencial para garantizar la validez de las inferencias y pronósticos derivados del modelo ARIMA.
 
@@ -36,18 +55,45 @@ Para comprobar si los residuos de un modelo ARIMA  aplicado a ausentismo laboral
 ```{r}
 residuos <- residuals(modelo_arima)
 plot(residuos, main = "Residuos del modelo ARIMA", ylab = "Residuos")
-acf(residuos, main = "ACF de los residuos")
+acf(residuos, lag.max = 30,  main = "ACF de los residuos")
 ```
-La función de autocorrelación (ACF): mide la correlación entre una serie de tiempo y sus valores retrasados. La autocorrelacion proporciona información de como una observación del ausentismo influye en las siguientes observaciones. Al trazar esta serie diferenciada, se observa un patrón oscilante al rededor de 0, sin una tendencia fuerte visible. Para determinar el valor de q en un modelo ARIMA, se puede mirar el gráfico ACF y buscar el primer retraso que tiene una correlación significativa (es decir en donde se sobrepasen las lineas punteadas. En esta grafica se observa  un Lag relevante de 3. esto ayuda a determinar  el q del modelo de ausentismo laboral observandose que en estos primeros rezagos se evidencia una correlación significativa no decreciente o convergente a cero.
+La función de autocorrelación (ACF): mide la correlación entre una serie de tiempo y sus valores retrasados. La autocorrelacion proporciona información de como una observación del ausentismo influye en las siguientes observaciones. Al trazar esta serie diferenciada, se observa un valor alto en el lag 0, lo cuál es normal pues se compara la serie con sigo misma y se espera que los residuos estén correlacionados con ellos mismos. Para determinar el valor de q en un modelo ARIMA, se puede mirar el gráfico ACF y buscar el primer retraso que tiene una correlación significativa (es decir en donde se sobrepasen las lineas punteadas). En esta grafica se observa  un Lag relevante de 3, indicando que hay una correlación significativa entre los valores actuales y los de hace 3 periodos (3 semanas atras). Este valor es interesante y puede estar asociado a la rotación de turnos (diario, tarde, nocturno). En general, esto mostraría que hay información no explicada por el modelo.
+
+Para la validacion del modelo se analiza que los residuos sean _Ruido Blanco_, es decir, que los residuos se distribuyen normalmente y no hay autocorrelación entre ellos. Para ello, se aplica la prueba de Shapiro para normalidad y la de  Ljung-Box para mirar si los residuales cumplen el supuesto de independencia o estan autocorrelacionados
+
+
+```{r}
+Box.test(residuos, lag = 10, type = "Ljung-Box")
+```
+
+Con la prueba de Ljung-Box, se evalúa si hay o no autocorrelación en los residuos, en este caso aplicada hasta 10 rezagos para que sea más significativa:
+
+- Hipótesis H0: No hay autocorrelación de los residuos 
+- H1: Existe autocorrelación de los residuos
+
+Como el P-value (0.1791) es mayor a 0.05 no se rechaza H0. En ese caso si se cumple la condición de los residuos son ruido blanco y no muestran autocorrelación significativa, siendo una buena señal de que el modelo ha capturado bien la estructura de la serie hasta los primeros 10 rezago.
+
+
+## Punto de cambio (AMOC)
+
+A continuación se usa la función cpt.mean() del paquete changepoint en R, específicamente con el método "AMOC" (At Most One Change), para detectar cambios en la media de una serie temporal.
 
 ```{r}
 mval<-cpt.mean(ts_diaria,method = "AMOC") 
 cpts(mval)
 ```
 
+
+El resultado muestra que la serie ts_diaria tiene una ruptura (cambio estructural) en el valor medio en el dato número 63. Esto sugiere que antes y después de ese punto, los valores de la serie tienen medias significativamente diferentes. El método "AMOC" busca una única ruptura (At Most One Change), y detectó que la mejor ubicación para dividir la serie en dos segmentos con medias distintas es en el punto 63. A continuación se gráfica el resultado para ver el punto de ruptura.
+
+
 ```{r}
 plot(mval, type = "l", cpt.col = "blue", xlab = "Value", cpt.width = 4, main = "default penalty")
 ```
+La gráfica muestra la serie con una línea vertical en el punto donde ocurre el cambio, y líneas horizontales indicando las medias antes y después. En este caso el valor 63 de la serie corresponde a la fecha: 2007-03-04, indicando un cambio significatoco en este día. Esta información puede ayudar a decidir si necesitas transformar o dividir la serie antes de ajustar un modelo ARIMA.
+
+## Predicción
+
 Estos son los datos de ausentismo laboral proyectados para los siguientes 12 días utilizando el paquete forecast para la serie diaria.
 
 ```{r}
@@ -61,7 +107,15 @@ plot(pred, main=" ", ylab="Horas", col="deepskyblue", xlab="Días")
 title(main="Predicción de Ausentismo laboral")
 
 ```
-En esta grafica se especificar el horizonte de pronóstico h periodos por delante para que se realicen las predicciones de ausentismo laboral
+En esta grafica se especificar el horizonte de pronóstico de h periodos por delante para que se realicen las predicciones de ausentismo laboral. En este caso correspondiente a 12 días. En una análisis visual inicial, la predicción parace guardar concordancia con el pronóstico del resto de la serie.
+
+A continuación se hace un análisis de los valores atípicos en la serie 
+
+La función tso() busca outliers que afecten la estructura de la serie, especialmente aquellos que pueden influir negativamente en el ajuste de modelos ARIMA. Identifica:
+
+- AO = Additive Outlier: un valor atípico puntual.
+- LS = Level Shift: un cambio repentino y permanente en el nivel de la serie.
+- TC = Temporary Change: un cambio brusco pero transitorio.
 
 ```{r}
  
@@ -70,21 +124,14 @@ data.ts.outliers <- tso(dat.ts)
 plot(data.ts.outliers)
 
 ```
+En el gráfico se observa:
+   
+- _Línea gris_: serie original (ts_diaria), sin ajuste.
+- _Línea azul_: serie ajustada tras identificar y corregir los outliers.
+- _Puntos rojos_: valores atípicos detectados (tipos como AO, LS o TC).
 
-Para la validacion del modelo se analiza que los residuos sean _Ruido Blanco_, es decir, que los residuos se distribuyen normalmente y no hay autocorrelación entre ellos. Para ello, se aplica la prueba de Shapiro para normalidad y la de  Ljung-Box para mirar si los residuales cumplen el supuesto de independencia o estan autocorrelacionados
+En general se observa que hay múltiples picos atípicos detectados a lo largo de la serie, donde los puntos rojos indican que en esos días hubo valores que no siguen el comportamiento esperado por el modelo ARIMA. Estos valores han sido ajustados en la línea azul, suavizando la serie. Esto indica que la serie contiene eventos que podrían ser anómalos, errores de registro, o situaciones excepcionales (como ausencias masivas, festivos especiales, etc.).
+
+En el gráfico inferior se observa que varios outliers tienen efectos importantes y persistentes (altas barras).Esos valores distorsionan la dinámica general de la serie y deben considerarse al ajustar o interpretar un modelo de predicción.
 
 
-```{r}
-shapiro.test(residuos)
-```
-
-```{r}
-Box.test(residuos, type = "Ljung-Box")
-```
-
-Con la prueba de Ljung-Box, se evalúa si hay o no autocorrelación en los residuos:
-
-- Hipótesis H0: No hay autocorrelación de los residuos 
-- H1: Existe autocorrelación de los residuos
-
-Como el P-value (0.1791) es mayor a 0.05 no se rechaza H0. En ese caso si se cumple la condición de los residuos, son ruido blanco (no se correlacionan los errores).

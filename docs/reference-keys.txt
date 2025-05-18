@@ -16,3 +16,7 @@ método-holt-winters
 predicción-próximos-7-días
 conclusión-aplicacion-metodología-holt-winters
 modelo-arima
+generación-del-modelo
+análisis-de-los-residuos
+punto-de-cambio-amoc
+predicción
