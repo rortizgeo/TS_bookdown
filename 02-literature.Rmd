@@ -5,6 +5,8 @@ options(repos = c(CRAN = "https://cran.r-project.org"))
 #install.packages("tseries")
 #install.packages("tsibble")
 #install.packages("fabletools")
+#install.packages("prophet")
+#install.packages("rstan", dependencies = TRUE)
 library(dplyr)
 library(zoo)      # Para series temporales y promedio móvil
 library(ggplot2)  # Para gráficos
@@ -21,6 +23,12 @@ library(timsac)
 library(changepoint)
 #install.packages("tsoutliers")
 library(tsoutliers)
+library(prophet)
+#install.packages("fable")
+library(fable)
+library(fable.prophet)
+#install.packages("feasts")
+library(feasts)
 ```
 
 
@@ -347,3 +355,5 @@ Para el proceso de diferenciacion se generaron 2 hipotesis de trabajo para la pr
 ## Conclusión 
 
 La descomposición confirma que el ausentismo laboral tiene una estructura estacional fuerte y una tendencia variable, además de una cantidad de ruido considerable. Esto respalda la necesidad de utilizar modelos que capturen tanto la estacionalidad como la tendencia. Además, el resultado del ADF que indicó estacionariedad sugiere que la serie ya es adecuada para modelado sin diferenciación adicional.
+
+

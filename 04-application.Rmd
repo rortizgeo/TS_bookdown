@@ -70,7 +70,7 @@ El Q-Q plot muestra que los puntos están  dispersos en las colas (por ejemplo, 
 
 
 ```{r}
-Box.test(residuos, lag = 10, type = "Ljung-Box")
+Box.test(resid(modelo_arima), lag = 10, type = "Ljung-Box")
 ```
 
 Con la prueba de Ljung-Box, se evalúa si hay o no autocorrelación en los residuos, en este caso aplicada hasta 10 rezagos para que sea más significativa:
@@ -78,7 +78,7 @@ Con la prueba de Ljung-Box, se evalúa si hay o no autocorrelación en los resid
 - Hipótesis H0: No hay autocorrelación de los residuos 
 - H1: Existe autocorrelación de los residuos
 
-Como el P-value (0.1791) es mayor a 0.05 no se rechaza H0. En ese caso si se cumple la condición de los residuos son ruido blanco y no muestran autocorrelación significativa, siendo una buena señal de que el modelo ha capturado bien la estructura de la serie hasta los primeros 10 rezago.
+Como el P-value (0.6886) es mayor a 0.05 no se rechaza H0. En ese caso si se cumple la condición de los residuos son ruido blanco y no muestran autocorrelación significativa, siendo una buena señal de que el modelo ha capturado bien la estructura de la serie hasta los primeros 10 rezago.
 
 
 ## Punto de cambio (AMOC)

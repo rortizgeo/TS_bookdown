@@ -1,1 +1,227 @@
-.
+# Modelo Prophet
+
+
+El modelo Prophet consiste en usar un modelo descomponible de series temporales y se estima utilizando un enfoque bayesiano para permitir la selección automática de los puntos de cambio y otras características del modelo y tiene en cuenta tres factores importantes: la tendencia, la estacionalidad y los días festivos. Estos componentes son combinados en la ecuación y(t) = g(t) + s(t) + h(t) +εt.
+ 
+El valor de y pronosticado por el modelo en el momento t viene dado por la función y(t) y tiene cuatro componentes:
+ 
+- _Componente de crecimiento o la tendencia generalg (t)_: Modela los cambios no periódicos. Los nudos (o puntos de cambio) para la tendencia lineal a trozos son seleccionados automáticamente si no se especifican explícitamente. Opcionalmente, se puede utilizar una función logística para establecer un límite superior en la tendencia
+ 
+- _Componente estacional s(t)_: representa la suma de todos los componentes periódicos y consiste en términos de Fourier de los periodos relevantes. Por defecto, se utiliza el orden 10 para la estacionalidad anual y el orden 3 para la estacionalidad semanal.
+ 
+- _Efectos de los días festivos h(t)_: representa uno o mas días que ocurren en calendarios irregulares o se pueden añadir como variables ficticias simples.
+ 
+- _Error εt_: es el término que engloba todos los demás cambios que no ajustan los demás componentes del modelo. Es el termino de ruido blanco.
+ 
+El modelo se estima utilizando un enfoque bayesiano para permitir la selección automática de los puntos de cambio y otras características del modelo.
+
+## Generacion del modelo
+
+Debido a que el modelo Prophet no opera directamente sobre objetos del tipo ts de R, sino sobre data frames, se utiliza una versión tabular de la serie temporal (serie_diaria). Para que Prophet pueda identificar correctamente las variables de fecha y valor, es obligatorio que las columnas se llamen ds (date stamp) y y (value). Por lo tanto, se realiza una transformación previa del conjunto de datos, renombrando las columnas correspondientes. Esta preparación garantiza que Prophet interprete adecuadamente la estructura temporal de la serie para modelar tendencias, estacionalidades y generar pronósticos de forma efectiva.
+
+A continuación se genera el modelado de la serie temporal diaria de ausencia laboral en horas, y que incluye un componente de estacionalidad semanal para capturar patrones con esa frecuencia.
+
+Debido a las características de los datos, se deicidió incluir un componentes mensual que odría mejorar el modelo. El siguiente código muestra la inicialización del modelo y su configuración.
+
+```{r}
+
+#Debido a que prophet se ejecuta sobre un dataframe y no un archivo tipo ts se usa serie_diaria. 
+#Prophet requiere usar nombres específicos para las columnas, se hace la respectiva transformación.
+# Validar columnas
+names(serie_diaria) <- c("ds", "y")
+
+# Filtrar valores válidos
+serie_diaria <- serie_diaria[!is.na(serie_diaria$ds) & !is.na(serie_diaria$y), ]
+
+# Confirmar que hay datos después del filtrado
+if (nrow(serie_diaria) == 0) {
+  stop("El dataframe `serie_diaria` está vacío después de limpiar valores NA.")
+}
+
+# Asegurar que `ds` es Date y `y` es numérico
+serie_diaria$ds <- as.Date(serie_diaria$ds)
+serie_diaria$y <- as.numeric(serie_diaria$y)
+
+# Inicializar modelo
+model_prophet <- prophet::prophet (
+  weekly.seasonality = TRUE,
+  daily.seasonality = FALSE,
+  yearly.seasonality = FALSE,
+  seasonality.mode = 'additive',
+  seasonality.prior.scale = 10
+)
+
+# Agregar estacionalidad mensual
+model_prophet <- add_seasonality(
+  model_prophet,
+  name = "monthly",
+  period = 30.5,
+  fourier.order = 3
+)
+
+# Ajustar el modelo
+model_prophet <- fit.prophet(model_prophet, serie_diaria)
+```
+
+**Interpretación del modelo Prophet**
+
+- _$growth = "linear"_:El modelo asume que la tendencia de la serie crece de manera lineal con el tiempo. Si quisieras un crecimiento que se estabiliza (sigmoide), usarías "logistic".
+
+- _$changepoints = NULL y $n.changepoints = 25_: Prophet no ha identificado aún los puntos exactos de cambio en la tendencia (aún no se ha entrenado o guardado esa parte), pero está configurado para buscar hasta 25 posibles puntos de cambio dentro del rango permitido.
+
+- _$changepoint.range = 0.8_ Los changepoints (cambios estructurales en la tendencia) se buscarán dentro del 80% inicial de la serie temporal. Esto previene que el modelo ajuste cambios cerca del final, donde hay más incertidumbre.
+
+- _$yearly.seasonality = "auto", $weekly.seasonality = "auto", $daily.seasonality = "auto"_: Prophet intentará detectar automáticamente si hay estacionalidades de tipo anual, semanal o diaria, en función de la longitud de la serie y la frecuencia de los datos. En el caso de ausentismo se entiende que los datos son diarias y según se analizo en capítulos anteriores la estacionalidad es semanal. 
+
+- _$holidays = NULL_: No se han incluido festivos o eventos externos como regresores adicionales. Puedes añadirlos manualmente si crees que afectan la serie (por ejemplo, días no laborales en una serie de ausentismo).
+
+- _$seasonality.mode = "additive"_: La estacionalidad se suma a la tendencia (modelo aditivo). Si los efectos estacionales crecen o decrecen con la tendencia, podrías usar el modo "multiplicative".
+
+- _$changepoint.prior.scale = 0.05_: Controla qué tan flexible es el modelo para detectar cambios de tendencia. Un valor bajo como 0.05 penaliza cambios bruscos, suavizando la tendencia. Valores más altos permiten más cambios estructurales.
+
+- _$seasonality.prior.scale = 10_: Determina cuánta libertad tiene el modelo para ajustar estacionalidades. Un valor de 10 es bastante flexible.
+
+- _$interval.width = 0.8_: Los intervalos de predicción se generarán con un 80% de confianza.
+
+- _$uncertainty.samples = 1000_: Se generan 1000 simulaciones para calcular la incertidumbre en los pronósticos.
+
+- _$mcmc.samples = 0_: No se usó muestreo bayesiano MCMC. Prophet ajusta los parámetros con máxima verosimilitud de forma más rápida (por defecto).
+
+
+## Predicción
+
+
+A continuación se procede a hacer la predicción a partir del modelo entrenado. Sin embargo, hay que tener en cuenta que las predicciones a largo plazo (como un año) se vuelven más inciertas, porque no hay datos reales para “anclar” la tendencia reciente y el modelo Prophet proyecta con base en la tendencia lineal y estacionalidades pasadas, que pueden cambiar. De igual forma, los intervalos de confianza (yhat_lower, yhat_upper) se vuelven más amplios.
+
+Por esto, para este ejercicio solo se pronostica para un periodo de 90 días (3 meses), que corresponderían al primer trimestre del año 2008. De esta forma las predicciones están más cerca de los datos conocidos y la estacionalidad semanal se proyecta de forma más confiable con menor acumulación de error.
+
+En primera instancia se usa la función _make_future_dataframe_ que crea un dataframe con fechas futuras que extiende el conjunto de datos históricos del modelo, pero no hace predicciones. En este caso extiende las fechas por 90 días en la columna _ds_ incluyendo las fehcas de los datos originales. 
+
+```{r}
+# Construcción de dataframe con las fechas de los futuros periodos 
+future <- make_future_dataframe(model_prophet, periods = 90)
+tail(future)
+```
+ 
+A continuación se calculan las predicciones _y_hat_ y los intervalos de incertidumbre para las fechas en _future_ a partir del modelo entrenado (model_prophet) y lo aplica sobre las fechas future. El dataframe devuelto (_forecast_) incluye las columnas: 
+
+- **ds** (fecha)
+- **yhat** (predicción)
+- **yhat_lower** & **yhat_upper** (intervalo de confianza)
+
+
+```{r}
+# Predicción de los valores futuros según el modelo generado, la variable y_hat es la predicción
+forecast <- predict(model_prophet, future)
+tail(forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')]) 
+```
+
+```{r}
+# Grafica
+plot(model_prophet, forecast)
+```
+
+El gráfico de la predcción del modelo muestra  una oscilación clara y regular en forma de picos y valles que se repite cada 7 días, lo cual indica que el modelo detectó una estacionalidad semanal, como se esperaba. Hay varios puntos negros muy por encima de la línea azul y del intervalo de confianza. Estos son días con picos inusuales de ausentismo, que el modelo no logra predecir bien. Por ejemplo, a mediados de 2007 y de nuevo hacia fines de año. Esto se vió también en el capítulo 4 cuando se construyó el modelo ARIMA.
+
+Adicionalmente, no se observó una tendencia claramente creciente o decreciente pues la línea azul parece mantenerse estable, lo que indica que Prophet no identificó una tendencia lineal fuerte en los datos.
+
+Respecto a la predicción, se observa que el intervalo de incertidumbre se ensancha gradualmente, lo que es esperado: el modelo es menos confiable mientras más lejos proyecta.
+
+```{r}
+# se crea un grafico para observar la tendencia, estacionalidad semanal y estacionalidad anual
+prophet_plot_components(model_prophet, forecast)
+```
+
+El gráfico de descomposión confirma los resultados mencionados anteriormente, a nivel semanal se evidencia el efecto del ausentismo a inicios de semana, con un mayor número de horas y menos frecuente hacía el final de la semana. A nivel anual pareciera haber una tendencia hacía la disminución en el número de horas de ausentismo. De igual manera, la predicción muestra el aumento en la incertidumbre a medida que se amplia el horizonte de predicción. A nivel mensual pareciera indicar un patrón constante en todas las semanas, excepto en la última semana del mes con una disminución en el total de horas de ausentismo. 
+
+
+```{r}
+# Se miran las escalas temporales con un grafico interactivo 
+dyplot.prophet(model_prophet, forecast)
+```
+
+
+# Capitulo 6 Comparacion de modelos
+
+Para evaluar el desempeño de distintos enfoques en la predicción del ausentismo laboral, se realizó una comparación entre tres modelos ampliamente utilizados en series de tiempo: ARIMA, ETS (suavizamiento exponencial) y Prophet. Cada uno de estos modelos incorpora supuestos y mecanismos distintos para capturar patrones como la tendencia, la estacionalidad y la variabilidad residual. El objetivo de esta comparación es identificar cuál de ellos ofrece mejores capacidades de ajuste y predicción a partir de los datos históricos disponibles. Para ello, se utilizó un conjunto de entrenamiento con datos diarios, y se aplicaron métricas de desempeño como el RMSE y MAE, además de visualizar sus pronósticos para un horizonte de tres meses. Esta evaluación permite establecer fortalezas y limitaciones relativas de cada enfoque, facilitando una selección informada del modelo más adecuado según el contexto y los objetivos analíticos.
+
+
+## Métricas a implementar
+
+Para la comparación de modelos se utilizan las siguientes métricas:
+
+
+- _Error medio (ME – Mean Error)_ : Es el promedio de todos los errores de un conjunto de observaciones.Puede estar sesgada debido ala compensacion de errores positivos y negativos pero sirve como indicador de asimetrias en la distribucion de los errores
+
+- _La raíz del error cuadrático medio (RMSE – Root Mean Square Error)_: Es la desviación estándar de los errores y tiene la ventaja de tener las mismas unidades que la variable predicha, por lo que es más fácil de interpretar directamente.
+
+- _Error absoluto medio (MAE – Mean Absolute Error)_: Corrige la inexactitud del error medio al poseeer valores absolutos, da un promedio de la magnitud absoluta de todos los valores de los errores, sin importar si eran positivos o negativos.protege los valorrs atipicos
+
+- _Error porcentual medio (MPE – Mean Percentage Error )_: Es el promedio de errores porcentuales por los que cada previsión difiere de sus correspondientes valores reales observados y no es una metrica adecuada para conjuntos de datos que contienen valores observados iguales a cero
+
+- _Error porcentual absoluto medio (MAPE – Mean Absolute Percentage Error)_: Esta metrica arregla el problema con la compensación de errores como lo hace el MAE pero funciona mejor si no hay extremos en los datos y no hay ceros.
+
+- _Error cuadrático medio (MASE – Mean Square Error)_: Corrige tambien las inexactitudes del error medio y comparado con el MAE otorga una mayor penalización en los errores de predicción grandes.
+
+- _Autocorrelacion (ACF1)_: Es un coeficiente de correlacion entre una observacion actual y sus valores retardados en distintos momentos. Mide la similitud entre la observacion actual y sus valores pasados, indicando la presencia de patrones o tendencias repetitivos en los datos.
+
+
+```{r}
+
+
+# Asegurarse que los datos tienen las columnas ds (fecha)  y (valor)
+# Convertir el ts a tsibble para que pueda ser usado con la librería fable
+ts_diaria <- as_tsibble(serie_diaria, index = ds)
+
+# Filtrar datos solo del año 2007 si fuera necesario (opcional si ya está limpio)
+ts_diaria <- ts_diaria %>%
+  filter(year(ds) == 2007)
+
+# Dividir el conjunto: entrenamiento (enero a septiembre), test (octubre a diciembre)
+train <- ts_diaria %>%
+  filter(ds < ymd("2007-10-01"))
+
+test <- ts_diaria %>%
+  filter(ds >= ymd("2007-10-01"))
+
+# Ajustar los modelos con los datos de entrenamiento
+fit <- train %>%
+  model(
+    arima = ARIMA(y),
+    ets = ETS(y),
+    prophet = prophet(y ~ season("week"))
+  )
+
+
+```
+
+
+```{r}
+# Predecir el mismo horizonte que test (ej: 92 días para octubre-diciembre)
+forecast_fit <- forecast(fit, h = nrow(test))
+
+# Visualizar comparación entre predicción y datos reales
+autoplot(forecast_fit, ts_diaria) +
+  ggtitle("Comparación de modelos: predicción vs. datos reales")
+
+
+
+```
+```{r}
+accuracy_table <- accuracy(forecast_fit, test)
+print(accuracy_table)
+
+
+```
+
+#### Conclusiones
+
+Al comparar el desempeño de los modelos ARIMA, ETS y Prophet sobre el conjunto de prueba (octubre a diciembre de 2007), se observa que los tres modelos presentan errores similares en términos absolutos, aunque con algunas diferencias relevantes en su comportamiento. El modelo Prophet mostró el menor RMSE (25.6), lo que indica que, en promedio, sus errores más grandes fueron ligeramente menos severos que los de ETS (25.7) y ARIMA (26.7). En términos de MAE, el modelo ETS obtuvo el mejor desempeño (12.2), seguido muy de cerca por Prophet (12.4), mientras que ARIMA presentó el mayor error absoluto promedio (12.8), lo que lo posiciona como el modelo menos preciso en esta comparación.
+
+En cuanto al sesgo de las predicciones (ME), ARIMA y ETS tienden a sobreestimar los valores reales (ME positivo), mientras que Prophet mostró un leve sesgo negativo, indicando una ligera tendencia a subestimar las observaciones. No obstante, este sesgo en Prophet es pequeño y posiblemente no significativo en la práctica.
+
+Por otro lado, las métricas de error basadas en porcentajes (MPE y MAPE) y las escaladas respecto a modelos base (MASE y RMSSE) no son confiables en este caso por contar con valores reales iguales a cero, razón por la que muestran valores indefinidos (NaN) o infinitos (Inf). Esto afecta la estabilidad numérica de estas métricas. Para este tipo de series, se recomienda complementar con otras métricas como SMAPE o enfocarse en MAE y RMSE.
+
+Finalmente, el análisis de la autocorrelación de los residuos (ACF1) muestra que los tres modelos presentan valores cercanos a cero, lo cual sugiere que no hay una estructura significativa de autocorrelación en los errores, lo que es un buen indicio de adecuación del modelo.
+
+Aunque todos los modelos ofrecen un desempeño razonablemente similar, ETS y Prophet destacan como las mejores opciones para este caso específico, con Prophet ofreciendo un balance adecuado entre bajo error cuadrático medio y menor sesgo. 

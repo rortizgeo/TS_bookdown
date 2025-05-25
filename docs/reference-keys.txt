@@ -21,3 +21,9 @@ análisis-de-los-residuos
 punto-de-cambio-amoc
 predicción
 conclusiones
+modelo-prophet
+generacion-del-modelo
+predicción-1
+capitulo-6-comparacion-de-modelos
+métricas-a-implementar
+conclusiones-1

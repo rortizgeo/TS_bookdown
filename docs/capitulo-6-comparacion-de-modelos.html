@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Análisis de series temporales: Ausentismo laboral</title>
+  <title>Capítulo 6 Capitulo 6 Comparacion de modelos | Análisis de series temporales: Ausentismo laboral</title>
   <meta name="description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
   <meta name="generator" content="bookdown 0.43 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Análisis de series temporales: Ausentismo laboral" />
+  <meta property="og:title" content="Capítulo 6 Capitulo 6 Comparacion de modelos | Análisis de series temporales: Ausentismo laboral" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Análisis de series temporales: Ausentismo laboral" />
+  <meta name="twitter:title" content="Capítulo 6 Capitulo 6 Comparacion de modelos | Análisis de series temporales: Ausentismo laboral" />
   
   <meta name="twitter:description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="capitulo-6-comparacion-de-modelos.html"/>
-
+<link rel="prev" href="modelo-prophet.html"/>
+<link rel="next" href="references.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -214,22 +214,76 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered hasAnchor">
-<h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>[1] Mowday RT, Porter LW, Steers RM (2013) Employee organization linkages: the psychology of commitment, absenteeism, and turnover. Academic press, New York</p>
-<p>[2] De Stobbeleir KE, De Clippeleer I, Caniëls MC, Goedertier F, Deprez J, De Vos A, Buyens D (2018) The inside effects of a strong external employer brand: how external perceptions can influ ence organizational absenteeism rates. Int J Hum Resour Manag 29:2106–2136.</p>
-<p>[3] Gonzalez BD, Grandner MA, Caminiti CB, Hui SA (2018) Cancer survivors in the workplace: sleep disturbance mediates the impact of cancer on healthcare expenditures and work absenteeism. Support Care Cancer 26:4049–4055.</p>
-<p>[4] Kocakulah, M. C., Kelley, A. G., Mitchell, K. M., &amp; Ruggieri, M. P. (2016). Absenteeism problems and costs: causes, effects and cures. The International Business &amp; Economics Research Journal (Online), 15(3), 89.</p>
-<p>[5] D. Dua and C. Graff, “Absenteeism at work Data Set,” UCI Machine Learning Repository, 2019. [Online]. Available: <a href="https://archive.ics.uci.edu/ml/datasets/Absenteeism+at+work" class="uri">https://archive.ics.uci.edu/ml/datasets/Absenteeism+at+work</a></p>
+<div id="capitulo-6-comparacion-de-modelos" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Capítulo 6</span> Capitulo 6 Comparacion de modelos<a href="capitulo-6-comparacion-de-modelos.html#capitulo-6-comparacion-de-modelos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Para evaluar el desempeño de distintos enfoques en la predicción del ausentismo laboral, se realizó una comparación entre tres modelos ampliamente utilizados en series de tiempo: ARIMA, ETS (suavizamiento exponencial) y Prophet. Cada uno de estos modelos incorpora supuestos y mecanismos distintos para capturar patrones como la tendencia, la estacionalidad y la variabilidad residual. El objetivo de esta comparación es identificar cuál de ellos ofrece mejores capacidades de ajuste y predicción a partir de los datos históricos disponibles. Para ello, se utilizó un conjunto de entrenamiento con datos diarios, y se aplicaron métricas de desempeño como el RMSE y MAE, además de visualizar sus pronósticos para un horizonte de tres meses. Esta evaluación permite establecer fortalezas y limitaciones relativas de cada enfoque, facilitando una selección informada del modelo más adecuado según el contexto y los objetivos analíticos.</p>
+<div id="métricas-a-implementar" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Métricas a implementar<a href="capitulo-6-comparacion-de-modelos.html#métricas-a-implementar" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Para la comparación de modelos se utilizan las siguientes métricas:</p>
+<ul>
+<li><p><em>Error medio (ME – Mean Error)</em> : Es el promedio de todos los errores de un conjunto de observaciones.Puede estar sesgada debido ala compensacion de errores positivos y negativos pero sirve como indicador de asimetrias en la distribucion de los errores</p></li>
+<li><p><em>La raíz del error cuadrático medio (RMSE – Root Mean Square Error)</em>: Es la desviación estándar de los errores y tiene la ventaja de tener las mismas unidades que la variable predicha, por lo que es más fácil de interpretar directamente.</p></li>
+<li><p><em>Error absoluto medio (MAE – Mean Absolute Error)</em>: Corrige la inexactitud del error medio al poseeer valores absolutos, da un promedio de la magnitud absoluta de todos los valores de los errores, sin importar si eran positivos o negativos.protege los valorrs atipicos</p></li>
+<li><p><em>Error porcentual medio (MPE – Mean Percentage Error )</em>: Es el promedio de errores porcentuales por los que cada previsión difiere de sus correspondientes valores reales observados y no es una metrica adecuada para conjuntos de datos que contienen valores observados iguales a cero</p></li>
+<li><p><em>Error porcentual absoluto medio (MAPE – Mean Absolute Percentage Error)</em>: Esta metrica arregla el problema con la compensación de errores como lo hace el MAE pero funciona mejor si no hay extremos en los datos y no hay ceros.</p></li>
+<li><p><em>Error cuadrático medio (MASE – Mean Square Error)</em>: Corrige tambien las inexactitudes del error medio y comparado con el MAE otorga una mayor penalización en los errores de predicción grandes.</p></li>
+<li><p><em>Autocorrelacion (ACF1)</em>: Es un coeficiente de correlacion entre una observacion actual y sus valores retardados en distintos momentos. Mide la similitud entre la observacion actual y sus valores pasados, indicando la presencia de patrones o tendencias repetitivos en los datos.</p></li>
+</ul>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="capitulo-6-comparacion-de-modelos.html#cb64-1" tabindex="-1"></a><span class="co"># Asegurarse que los datos tienen las columnas ds (fecha)  y (valor)</span></span>
+<span id="cb64-2"><a href="capitulo-6-comparacion-de-modelos.html#cb64-2" tabindex="-1"></a><span class="co"># Convertir el ts a tsibble para que pueda ser usado con la librería fable</span></span>
+<span id="cb64-3"><a href="capitulo-6-comparacion-de-modelos.html#cb64-3" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">as_tsibble</span>(serie_diaria, <span class="at">index =</span> ds)</span>
+<span id="cb64-4"><a href="capitulo-6-comparacion-de-modelos.html#cb64-4" tabindex="-1"></a></span>
+<span id="cb64-5"><a href="capitulo-6-comparacion-de-modelos.html#cb64-5" tabindex="-1"></a><span class="co"># Filtrar datos solo del año 2007 si fuera necesario (opcional si ya está limpio)</span></span>
+<span id="cb64-6"><a href="capitulo-6-comparacion-de-modelos.html#cb64-6" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb64-7"><a href="capitulo-6-comparacion-de-modelos.html#cb64-7" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">year</span>(ds) <span class="sc">==</span> <span class="dv">2007</span>)</span>
+<span id="cb64-8"><a href="capitulo-6-comparacion-de-modelos.html#cb64-8" tabindex="-1"></a></span>
+<span id="cb64-9"><a href="capitulo-6-comparacion-de-modelos.html#cb64-9" tabindex="-1"></a><span class="co"># Dividir el conjunto: entrenamiento (enero a septiembre), test (octubre a diciembre)</span></span>
+<span id="cb64-10"><a href="capitulo-6-comparacion-de-modelos.html#cb64-10" tabindex="-1"></a>train <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb64-11"><a href="capitulo-6-comparacion-de-modelos.html#cb64-11" tabindex="-1"></a>  <span class="fu">filter</span>(ds <span class="sc">&lt;</span> <span class="fu">ymd</span>(<span class="st">&quot;2007-10-01&quot;</span>))</span>
+<span id="cb64-12"><a href="capitulo-6-comparacion-de-modelos.html#cb64-12" tabindex="-1"></a></span>
+<span id="cb64-13"><a href="capitulo-6-comparacion-de-modelos.html#cb64-13" tabindex="-1"></a>test <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb64-14"><a href="capitulo-6-comparacion-de-modelos.html#cb64-14" tabindex="-1"></a>  <span class="fu">filter</span>(ds <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">&quot;2007-10-01&quot;</span>))</span>
+<span id="cb64-15"><a href="capitulo-6-comparacion-de-modelos.html#cb64-15" tabindex="-1"></a></span>
+<span id="cb64-16"><a href="capitulo-6-comparacion-de-modelos.html#cb64-16" tabindex="-1"></a><span class="co"># Ajustar los modelos con los datos de entrenamiento</span></span>
+<span id="cb64-17"><a href="capitulo-6-comparacion-de-modelos.html#cb64-17" tabindex="-1"></a>fit <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb64-18"><a href="capitulo-6-comparacion-de-modelos.html#cb64-18" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb64-19"><a href="capitulo-6-comparacion-de-modelos.html#cb64-19" tabindex="-1"></a>    <span class="at">arima =</span> <span class="fu">ARIMA</span>(y),</span>
+<span id="cb64-20"><a href="capitulo-6-comparacion-de-modelos.html#cb64-20" tabindex="-1"></a>    <span class="at">ets =</span> <span class="fu">ETS</span>(y),</span>
+<span id="cb64-21"><a href="capitulo-6-comparacion-de-modelos.html#cb64-21" tabindex="-1"></a>    <span class="at">prophet =</span> <span class="fu">prophet</span>(y <span class="sc">~</span> <span class="fu">season</span>(<span class="st">&quot;week&quot;</span>))</span>
+<span id="cb64-22"><a href="capitulo-6-comparacion-de-modelos.html#cb64-22" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="capitulo-6-comparacion-de-modelos.html#cb65-1" tabindex="-1"></a><span class="co"># Predecir el mismo horizonte que test (ej: 92 días para octubre-diciembre)</span></span>
+<span id="cb65-2"><a href="capitulo-6-comparacion-de-modelos.html#cb65-2" tabindex="-1"></a>forecast_fit <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit, <span class="at">h =</span> <span class="fu">nrow</span>(test))</span>
+<span id="cb65-3"><a href="capitulo-6-comparacion-de-modelos.html#cb65-3" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="capitulo-6-comparacion-de-modelos.html#cb65-4" tabindex="-1"></a><span class="co"># Visualizar comparación entre predicción y datos reales</span></span>
+<span id="cb65-5"><a href="capitulo-6-comparacion-de-modelos.html#cb65-5" tabindex="-1"></a><span class="fu">autoplot</span>(forecast_fit, ts_diaria) <span class="sc">+</span></span>
+<span id="cb65-6"><a href="capitulo-6-comparacion-de-modelos.html#cb65-6" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Comparación de modelos: predicción vs. datos reales&quot;</span>)</span></code></pre></div>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="capitulo-6-comparacion-de-modelos.html#cb66-1" tabindex="-1"></a>accuracy_table <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(forecast_fit, test)</span>
+<span id="cb66-2"><a href="capitulo-6-comparacion-de-modelos.html#cb66-2" tabindex="-1"></a><span class="fu">print</span>(accuracy_table)</span></code></pre></div>
+<pre><code>## # A tibble: 3 × 10
+##   .model  .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE    ACF1
+##   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+## 1 arima   Test   1.40   26.7  12.8  -Inf   Inf   NaN   NaN -0.0640
+## 2 ets     Test   2.19   25.7  12.2   NaN   Inf   NaN   NaN -0.127 
+## 3 prophet Test  -0.613  25.6  12.4   NaN   Inf   NaN   NaN -0.131</code></pre>
+<div id="conclusiones-1" class="section level4 hasAnchor" number="6.1.0.1">
+<h4><span class="header-section-number">6.1.0.1</span> Conclusiones<a href="capitulo-6-comparacion-de-modelos.html#conclusiones-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Al comparar el desempeño de los modelos ARIMA, ETS y Prophet sobre el conjunto de prueba (octubre a diciembre de 2007), se observa que los tres modelos presentan errores similares en términos absolutos, aunque con algunas diferencias relevantes en su comportamiento. El modelo Prophet mostró el menor RMSE (25.6), lo que indica que, en promedio, sus errores más grandes fueron ligeramente menos severos que los de ETS (25.7) y ARIMA (26.7). En términos de MAE, el modelo ETS obtuvo el mejor desempeño (12.2), seguido muy de cerca por Prophet (12.4), mientras que ARIMA presentó el mayor error absoluto promedio (12.8), lo que lo posiciona como el modelo menos preciso en esta comparación.</p>
+<p>En cuanto al sesgo de las predicciones (ME), ARIMA y ETS tienden a sobreestimar los valores reales (ME positivo), mientras que Prophet mostró un leve sesgo negativo, indicando una ligera tendencia a subestimar las observaciones. No obstante, este sesgo en Prophet es pequeño y posiblemente no significativo en la práctica.</p>
+<p>Por otro lado, las métricas de error basadas en porcentajes (MPE y MAPE) y las escaladas respecto a modelos base (MASE y RMSSE) no son confiables en este caso por contar con valores reales iguales a cero, razón por la que muestran valores indefinidos (NaN) o infinitos (Inf). Esto afecta la estabilidad numérica de estas métricas. Para este tipo de series, se recomienda complementar con otras métricas como SMAPE o enfocarse en MAE y RMSE.</p>
+<p>Finalmente, el análisis de la autocorrelación de los residuos (ACF1) muestra que los tres modelos presentan valores cercanos a cero, lo cual sugiere que no hay una estructura significativa de autocorrelación en los errores, lo que es un buen indicio de adecuación del modelo.</p>
+<p>Aunque todos los modelos ofrecen un desempeño razonablemente similar, ETS y Prophet destacan como las mejores opciones para este caso específico, con Prophet ofreciendo un balance adecuado entre bajo error cuadrático medio y menor sesgo.</p>
 
+</div>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="capitulo-6-comparacion-de-modelos.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="modelo-prophet.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -260,7 +314,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/rstudio/bookdown-demo/edit/master/06-references.Rmd",
+    "link": "https://github.com/rstudio/bookdown-demo/edit/master/05-summary.Rmd",
     "text": "Edit"
   },
   "history": {
