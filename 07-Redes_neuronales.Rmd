@@ -1,0 +1,324 @@
+
+# Redes Neuronales
+
+Mediante el uso de modelos con series neuronales se puede tener una arquitectura que genera una memoria con sentido temporal lo que lo hace aplicable a las series de tiempo, se pueden tener varias neuronas que registran entradas y generan salidas a las capas del modelo, estas conexiones arbitrarias entre las neuronas permiten crear ciclos y temporalidad. Existen diferentes tipos de modelos de redes neuronales dependiendo de la forma como están dispuestas las entradas y las salida, los mas conocidos son la red neuronal recurrente (ELMAN) y la red neuronal con memoria a corto plazo (Jordan).
+
+```{r}
+#Debido a las transformaciones realizadas anteriormente en ts_diaria, se redefine nuevamente para evitar conflicto con la clase del objeto en las operaciones posteriores. 
+
+# Agrupar por fecha y sumar las horas de ausencia (puede haber varias por día)
+serie_diaria <- datos %>%
+  filter(!is.na(Fecha)) %>%
+  group_by(Fecha) %>%
+  summarise(Horas = sum(Absenteeism.time.in.hours, na.rm = TRUE)) %>%
+  arrange(Fecha)
+
+# Rellenar fechas faltantes (por si hay días sin datos)
+todas_las_fechas <- data.frame(
+  Fecha = seq.Date(min(serie_diaria$Fecha), max(serie_diaria$Fecha), by = "day")
+)
+
+serie_diaria <- todas_las_fechas %>%
+  left_join(serie_diaria, by = "Fecha") %>%
+  mutate(Horas = ifelse(is.na(Horas), 0, Horas))
+
+ts_diaria <- ts(serie_diaria$Horas, frequency = 7)
+
+```
+
+
+En este ejercicio se trabaja nuevamente con la serie ts_diaria construida en el capítulo 2.
+```{r}
+class(ts_diaria)
+```
+
+
+Para el uso de redes neuronales se requiere de la normalización de los datos en formato serie de tiempo. A continuación se realiza la respectiva normalización.
+
+```{r normalizacion_ausentismo, echo=TRUE, message=FALSE, warning=FALSE}
+ts_norm <- (ts_diaria-min(ts_diaria))/(max(ts_diaria)-min(ts_diaria))  
+plot(ts_norm, main="Serie de tiempo ausentismo datos normalizados",xlab="Tiempo", ylab="Z")
+```
+Ahora comprobamos el tamaño del dataset para definir el tamaño del conjunto de datos de entrenamiento y de prueba.
+```{r}
+#Se comprueba el numero de filas totales del dataset.
+tamano_total<-length(ts_norm)
+tamano_total
+```
+
+Se define el conjunto de entrenamiento.
+
+```{r}
+#definicion set de entrenamiento
+tamano_train <- round(tamano_total*0.8, digits = 0)
+train <- 0:(tamano_train-1)
+train
+```
+
+Se define el conjunto de prueba
+
+```{r}
+#definicion set de prueba
+test <- (tamano_train):tamano_total
+test
+```
+
+
+Se crea un marco de datos con n columnas, cada una de las cuales se construye avanzando un valor de la serie en el futuro, a través de una variable de tipo zoo.
+
+```{r}
+y<-as.zoo(ts_norm)
+x1<-Lag(y,k=1)
+x2<-Lag(y,k=2)
+x3<-Lag(y,k=3)
+x4<-Lag(y,k=4)
+x5<-Lag(y,k=5)
+x6<-Lag(y,k=6)
+x7<-Lag(y,k=7)
+x8<-Lag(y,k=8)
+x9<-Lag(y,k=9)
+x10<-Lag(y,k=10)
+x11 <- Lag(y, k = 11)
+x12 <- Lag(y, k = 12)
+ts_norm <- cbind(y,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12)
+```
+
+Se eliminan los valoers NA que pueden desplazar la serie
+
+```{r}
+anyNA(ts_norm)
+
+ts_norm_Lag <- ts_norm[-(1:12),]
+DT::datatable(ts_norm_Lag)
+anyNA(ts_norm_Lag)
+```
+
+Se definen por conveniencia los valores de entrada y salida de la red neuronal.
+
+```{r}
+#Luego definimos los valores de entrada y salida de la red neuronal:
+inputs <- ts_norm_Lag[,2:13]
+outputs <- ts_norm_Lag[,1]
+```
+
+## Redes neuronales: ELMAN
+
+Se crea una red tipo ELMAN y proceder a entrenarla con los datos previamente definidos.
+
+```{r}
+fit<-elman(inputs[train],
+ outputs[train],
+ size=c(5,4,3,2,1),
+ learnFuncParams=c(1),
+ maxit=10000)
+```
+
+El tercer parámetro indica que queremos crear cincto capas ocultas, una con cinco neuronas y así sucesivamente hasta una última capa con una neurona. Esto se ajustó al ver que el rendimiento del modelo aplicando solo dos capas no era adecuado. Además, indicamos una tasa de aprendizaje de 1, y también un número máximo de iteraciones de 10.000.
+
+Con la función _plotIterativeError_ podemos ver cómo ha evolucionado el error de red a lo largo de las iteraciones de entrenamiento y se encuentra que este tiende a 0,esto indica que el modelo ha logrado aprender una representación correcta de los datos.
+
+```{r}
+plotIterativeError(fit)
+```
+
+Ahora se realiza una evaluación del modelo solo sobre el conjunto de entrenamiento. Esto es útil para evaluar el overfitting (comparando errores en entrenamiento vs prueba).
+
+### Desempeño del modelo ELMAN con datos de entrenamiento.
+
+```{r}
+# Se elimina el conjunto de test de las entradas y salidas de las neuronas para realizar el ajuste del modelo a los datos reales
+y_train <- as.vector(outputs[-test])
+predtrain1 <- predict(fit, inputs[-test])
+```
+Aunque los modelos (como redes neuronales) aprenden mejor con datos normalizados, la evaluación y la interpretación de resultados (por ejemplo, errores absolutos, visualización de predicciones) deben hacerse en la escala original para que tengan sentido.
+
+El siguiente código realiza el proceso conocido como "desnormalización" o "re-escalado inverso" de los datos que han sido previamente normalizados.
+
+```{r}
+y_train<-y_train*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+predtrain1<-predtrain1*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+```
+
+El gráfico muestra el ajuste del modelo de red neuronal ELMAN sobre los datos del conjunto de entrenamiento. La línea negra representa los valores reales del fenómeno analizado (en este caso, el ausentismo normalizado), mientras que la línea roja corresponde a las predicciones generadas por el modelo para esas mismas observaciones. Un buen ajuste se refleja en que ambas líneas estén cercanas y sigan una trayectoria similar, lo que indica que el modelo ha aprendido correctamente la estructura de los datos. 
+
+```{r}
+
+n <- min(length(y_train), length(predtrain1))
+
+pt1 <- plotly::plot_ly(x = 1:n, y = y_train[1:n], type = 'scatter', mode = 'lines',
+               line = list(color = 'black'), name = 'Datos reales') %>%
+  plotly::add_lines(x = 1:n, y = predtrain1[1:n],
+            line = list(color = 'red'), name = 'Predicciones') %>%
+  plotly::layout(
+    title = "Ajuste de las predicciones modelo ELMAN en datos de entrenamiento",
+    xaxis = list(title = "Observación"),
+    yaxis = list(title = "Ausentismo normalizado")
+  )
+
+pt1
+
+```
+En este caso se evidencia el comportamiento de las 291 observaciones que hacen parte del dataset de entrenaiento y se observan ciertas diferencias. Aunque las predicciones tratan de ajustarse a los datos reales, no los siguen completamente bien, sobre todo se evidencia que no hay ausencias de 0 horas en la predicción. 
+
+### Desempeño del modelo ELMAN con datos de prueba.
+
+Este conjunto de bloques de código evalúa el desempeño del modelo de red neuronal ELMAN sobre el conjunto de prueba. Primero, se extraen las salidas verdaderas (y_test) y se calculan las predicciones del modelo (predtest1) usando únicamente las observaciones que no formaron parte del conjunto de entrenamiento. Luego, ambas series —que previamente fueron normalizadas— se transforman nuevamente a su escala original mediante una operación de desnormalización basada en el rango de los datos originales (ts_diaria).
+
+
+```{r}
+# se elimina el conjunto de test de las entradas y salidas de las neuronas para realizar el ajuste del modelo a los datos reales
+y_test <- as.vector(outputs[-train])
+predtest1 <- predict(fit, inputs[-train])
+```
+
+```{r}
+y_test<-y_test*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+predtest1<-predtest1*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+```
+
+Finalmente, se genera un gráfico interactivo en el que se superponen los valores reales (línea negra) y las predicciones (línea roja) para cada observación del conjunto de prueba (62 Observaciones). Este gráfico permite evaluar visualmente qué tan bien el modelo ELMAN generaliza a datos nuevos, y si sus predicciones son razonablemente cercanas a los valores reales.
+
+```{r}
+pt2 <- plotly::plot_ly(x = 1:length(y_test), y = y_test, type = 'scatter', mode = 'lines',
+             line = list(color = 'black'), name = 'Datos reales') %>%
+     plotly::add_lines(x = 1:length(predtest1), y = predtest1, 
+               line = list(color = 'red'), name = 'Predicciones') %>%
+     plotly::layout(title = "Ajuste de las predicciones modelo ELMAN en datos de prueba",
+            xaxis = list(title = "Observación"),
+            yaxis = list(title = "Ausentismo"))
+
+pt2
+
+```
+
+Mientras que el gráfico basado en y_train y predtrain1 busca evaluar qué tan bien el modelo de red neuronal ELMAN fue capaz de aprender los patrones presentes en el conjunto de entrenamiento, el gráfico basado en y_test y predtest1 tiene un objetivo mucho más crítico: medir la capacidad de generalización del modelo a datos nunca antes vistos.
+
+Esto es importante porque un modelo que memoriza los datos de entrenamiento sin poder predecir con precisión sobre datos nuevos probablemente esté sobreajustado. En cambio, si las predicciones sobre el conjunto de prueba son buenas, podemos confiar en que el modelo será útil en contextos reales o futuros.
+
+Ambos gráficos se desnormalizan para facilitar la interpretación, pero su utilidad analítica es diferente: el primero es introspectivo (¿aprendió el modelo?), y el segundo es prospectivo (¿puede predecir bien?). En este caso, se ve que el modelo tuvo problemas con los datos atípicos y prediciendo los días de 0 horas de ausentismo. Lo mejor sería ajustar los hiperparámetros del modelo para tratar de obtener un mayor ajuste respecto a las métricas de rendimiento. 
+
+
+## Redes neuronales: JORDAN
+
+Ahora se crea una serie Jordan. Se solicitan cuatro capas ocultas y un factor de tasa de aprendizaje de 0.01.
+
+```{r}
+fit2<-jordan(inputs[train],
+ outputs[train],
+ size=10,
+ learnFuncParams=c(1),
+ maxit=10000)
+```
+
+```{r}
+plotIterativeError(fit2, main = "Error iterativo para 5 neuronas")
+```
+La grafica anterior muestra que el error en el modelo JORDAN converge a cero, por lo que se espera un ajuste rápido del modelo. Esto indica que el modelo ha logrado aprender una representación correcta de los datos.
+
+Se solicitan 10 capas ocultas y un factor de tasa de aprendizaje de 1. El resultado también se parcialmente a la serie original
+
+
+### Desempeño del modelo JORDAN con datos de entrenamiento.
+
+```{r}
+# Se elimina el conjunto de test de las entradas y salidas de las neuronas para realizar el ajuste del modelo a los datos reales
+y_j_train <- as.vector(outputs[-test])
+predtrain2 <- predict(fit2, inputs[-test])
+```
+
+```{r}
+y_j_train<-y_j_train*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+predtrain2<-predtrain2*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+```
+
+```{r}
+pt3 <- plotly::plot_ly(x = 1:length(y_j_train), y = y_j_train, type = 'scatter', mode = 'lines',
+             line = list(color = 'black'), name = 'Datos reales') %>%
+     plotly::add_lines(x = 1:length(predtrain2), y = predtrain2, 
+               line = list(color = 'red'), name = 'Predicciones') %>%
+     plotly::layout(title = "Ajuste de las predicciones modelo JORDAN en datos de entrenamiento",
+            xaxis = list(title = "Observación"),
+            yaxis = list(title = "Ausentismo normalizado"))
+
+pt3
+```
+
+### Desempeño del modelo JORDAN con datos de prueba.
+
+
+```{r}
+# se elimina el conjunto de test de las entradas y salidas de las neuronas para realizar el ajuste del modelo a los datos reales
+y_j_test <- as.vector(outputs[-train])
+predtest2 <- predict(fit2, inputs[-train])
+```
+
+```{r}
+y_j_test<-y_j_test*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+predtest2<-predtest2*(max(ts_diaria)-min(ts_diaria))+min(ts_diaria)
+```
+
+```{r}
+pt4 <- plotly::plot_ly(x = 1:length(y_j_test), y = y_j_test, type = 'scatter', mode = 'lines',
+             line = list(color = 'black'), name = 'Datos reales') %>%
+     plotly::add_lines(x = 1:length(predtest2), y = predtest2, 
+               line = list(color = 'red'), name = 'Predicciones') %>%
+     plotly::layout(title = "Ajuste de las predicciones modelo JORDAN en datos de prueba",
+            xaxis = list(title = "Observación"),
+            yaxis = list(title = "IPC"))
+
+pt4
+```
+
+
+
+## Rendimiento Redes ELMAN y JORDAN
+
+
+### Rendimiento ELMAN
+
+```{r}
+
+
+# Calcular errores
+errores_elman <- y_test - predtest1
+
+# Métricas de evaluación
+mae <- mae(y_test, predtest1)          # Error absoluto medio
+rmse <- rmse(y_test, predtest1)        # Raíz del error cuadrático medio
+me <- mean(errores_elman)                   # Error medio (ME)
+acf1 <- acf(errores_elman, plot = FALSE)$acf[2]  # ACF con rezago 1
+
+# Mostrar resultados
+cat("MAE  :", round(mae, 4), "\n")
+cat("RMSE :", round(rmse, 4), "\n")
+cat("ME   :", round(me, 4), "\n")
+cat("ACF1 :", round(acf1, 4), "\n")
+
+```
+
+### Rendimiento Jordan
+
+
+```{r}
+
+# Calcular errores
+errores_jordan <- y_j_test - predtest2
+
+# Métricas de evaluación
+mae <- mae(y_j_test, predtest2)          # Error absoluto medio
+rmse <- rmse(y_j_test, predtest2)        # Raíz del error cuadrático medio
+me <- mean(errores_jordan)                   # Error medio (ME)
+acf1 <- acf(errores_jordan, plot = FALSE)$acf[2]  # ACF con rezago 1
+
+# Mostrar resultados
+cat("MAE  :", round(mae, 4), "\n")
+cat("RMSE :", round(rmse, 4), "\n")
+cat("ME   :", round(me, 4), "\n")
+cat("ACF1 :", round(acf1, 4), "\n")
+
+```
+
+### Conclusión
+
+
+

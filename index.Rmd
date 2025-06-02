@@ -8,7 +8,7 @@ documentclass: book
 bibliography: [book.bib, packages.bib]
 biblio-style: apalike
 link-citations: yes
-github-repo: rstudio/bookdown-demo
+github-repo: https://github.com/rortizgeo/TS_bookdown
 description: "Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI"
 ---
 

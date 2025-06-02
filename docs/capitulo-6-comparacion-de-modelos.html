@@ -12,7 +12,7 @@
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Este es un ejemplo aplicado de análisis de series temporales usando la base de datos de ausentismo laboral disponible en UCI" />
-  <meta name="github-repo" content="rstudio/bookdown-demo" />
+  <meta name="github-repo" content="https://github.com/rortizgeo/TS_bookdown" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Capítulo 6 Capitulo 6 Comparacion de modelos | Análisis de series temporales: Ausentismo laboral" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-05-25" />
+<meta name="date" content="2025-06-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -66,6 +66,17 @@
 <script src="libs/moment-fquarter-1.0.0/moment-fquarter.min.js"></script>
 <script src="libs/dygraphs-binding-1.1.1.6/dygraphs.js"></script>
 <script src="libs/Dygraph.Plugins.Unzoom-1.0/unzoom.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.33/datatables.js"></script>
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <style type="text/css">
@@ -151,7 +162,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">A Minimal Book Example</a></li>
+<li><a href="./">Análisis de series temporales</a></li>
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="ausentismo-laboral.html"><a href="ausentismo-laboral.html"><i class="fa fa-check"></i><b>1</b> AUSENTISMO LABORAL</a>
@@ -194,8 +205,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1" data-path="capitulo-6-comparacion-de-modelos.html"><a href="capitulo-6-comparacion-de-modelos.html#métricas-a-implementar"><i class="fa fa-check"></i><b>6.1</b> Métricas a implementar</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Redes Neuronales</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="redes-neuronales.html"><a href="redes-neuronales.html#redes-neuronales-elman"><i class="fa fa-check"></i><b>7.1</b> Redes neuronales: ELMAN</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="redes-neuronales.html"><a href="redes-neuronales.html#desempeño-del-modelo-elman-con-datos-de-entrenamiento."><i class="fa fa-check"></i><b>7.1.1</b> Desempeño del modelo ELMAN con datos de entrenamiento.</a></li>
+<li class="chapter" data-level="7.1.2" data-path="redes-neuronales.html"><a href="redes-neuronales.html#desempeño-del-modelo-elman-con-datos-de-prueba."><i class="fa fa-check"></i><b>7.1.2</b> Desempeño del modelo ELMAN con datos de prueba.</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="redes-neuronales.html"><a href="redes-neuronales.html#redes-neuronales-jordan"><i class="fa fa-check"></i><b>7.2</b> Redes neuronales: JORDAN</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="redes-neuronales.html"><a href="redes-neuronales.html#desempeño-del-modelo-jordan-con-datos-de-entrenamiento."><i class="fa fa-check"></i><b>7.2.1</b> Desempeño del modelo JORDAN con datos de entrenamiento.</a></li>
+<li class="chapter" data-level="7.2.2" data-path="redes-neuronales.html"><a href="redes-neuronales.html#desempeño-del-modelo-jordan-con-datos-de-prueba."><i class="fa fa-check"></i><b>7.2.2</b> Desempeño del modelo JORDAN con datos de prueba.</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="redes-neuronales.html"><a href="redes-neuronales.html#rendimiento-redes-elman-y-jordan"><i class="fa fa-check"></i><b>7.3</b> Rendimiento Redes ELMAN y JORDAN</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="redes-neuronales.html"><a href="redes-neuronales.html#rendimiento-elman"><i class="fa fa-check"></i><b>7.3.1</b> Rendimiento ELMAN</a></li>
+<li class="chapter" data-level="7.3.2" data-path="redes-neuronales.html"><a href="redes-neuronales.html#rendimiento-jordan"><i class="fa fa-check"></i><b>7.3.2</b> Rendimiento Jordan</a></li>
+<li class="chapter" data-level="7.3.3" data-path="redes-neuronales.html"><a href="redes-neuronales.html#conclusión-1"><i class="fa fa-check"></i><b>7.3.3</b> Conclusión</a></li>
+</ul></li>
+</ul></li>
 <li class="divider"></li>
-<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+<li><a href="https://github.com/rortizgeo/TS_bookdown" target="blank">Published with bookdown</a></li>
 
 </ul>
 
@@ -258,7 +288,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb65-5"><a href="capitulo-6-comparacion-de-modelos.html#cb65-5" tabindex="-1"></a><span class="fu">autoplot</span>(forecast_fit, ts_diaria) <span class="sc">+</span></span>
 <span id="cb65-6"><a href="capitulo-6-comparacion-de-modelos.html#cb65-6" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Comparación de modelos: predicción vs. datos reales&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="capitulo-6-comparacion-de-modelos.html#cb66-1" tabindex="-1"></a>accuracy_table <span class="ot">&lt;-</span> <span class="fu">accuracy</span>(forecast_fit, test)</span>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="capitulo-6-comparacion-de-modelos.html#cb66-1" tabindex="-1"></a>accuracy_table <span class="ot">&lt;-</span> forecast<span class="sc">::</span><span class="fu">accuracy</span>(forecast_fit, test)</span>
 <span id="cb66-2"><a href="capitulo-6-comparacion-de-modelos.html#cb66-2" tabindex="-1"></a><span class="fu">print</span>(accuracy_table)</span></code></pre></div>
 <pre><code>## # A tibble: 3 × 10
 ##   .model  .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE    ACF1
@@ -314,7 +344,7 @@ gitbook.start({
     "size": 2
   },
   "edit": {
-    "link": "https://github.com/rstudio/bookdown-demo/edit/master/05-summary.Rmd",
+    "link": "https://github.com/rortizgeo/TS_bookdown/05-Prophet.Rmd",
     "text": "Edit"
   },
   "history": {

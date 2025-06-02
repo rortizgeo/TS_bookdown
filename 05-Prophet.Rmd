@@ -192,7 +192,6 @@ fit <- train %>%
     prophet = prophet(y ~ season("week"))
   )
 
-
 ```
 
 
@@ -204,11 +203,11 @@ forecast_fit <- forecast(fit, h = nrow(test))
 autoplot(forecast_fit, ts_diaria) +
   ggtitle("Comparación de modelos: predicción vs. datos reales")
 
-
-
 ```
+
+
 ```{r}
-accuracy_table <- accuracy(forecast_fit, test)
+accuracy_table <- forecast::accuracy(forecast_fit, test)
 print(accuracy_table)
 
 

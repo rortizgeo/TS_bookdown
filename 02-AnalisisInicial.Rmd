@@ -29,6 +29,12 @@ library(fable)
 library(fable.prophet)
 #install.packages("feasts")
 library(feasts)
+library(RSNNS)
+library(zoo)
+library(quantmod)
+library(Metrics)
+
+
 ```
 
 

@@ -27,3 +27,14 @@ predicción-1
 capitulo-6-comparacion-de-modelos
 métricas-a-implementar
 conclusiones-1
+redes-neuronales
+redes-neuronales-elman
+desempeño-del-modelo-elman-con-datos-de-entrenamiento.
+desempeño-del-modelo-elman-con-datos-de-prueba.
+redes-neuronales-jordan
+desempeño-del-modelo-jordan-con-datos-de-entrenamiento.
+desempeño-del-modelo-jordan-con-datos-de-prueba.
+rendimiento-redes-elman-y-jordan
+rendimiento-elman
+rendimiento-jordan
+conclusión-1
