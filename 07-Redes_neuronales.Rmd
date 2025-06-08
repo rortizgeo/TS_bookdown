@@ -200,7 +200,10 @@ Ambos gráficos se desnormalizan para facilitar la interpretación, pero su util
 
 ## Redes neuronales: JORDAN
 
-Ahora se crea una serie Jordan. Se solicitan cuatro capas ocultas y un factor de tasa de aprendizaje de 0.01.
+La red Jordan es un tipo de red neuronal recurrente, donde parte de la salida del modelo se retroalimenta a sí misma en el siguiente paso temporal. Es útil para series temporales o datos secuenciales, ya que puede recordar patrones del pasado inmediato.
+
+Se solicitan 10 capas ocultas y un factor de tasa de aprendizaje de 1. El resultado también se parcialmente a la serie original
+
 
 ```{r}
 fit2<-jordan(inputs[train],
@@ -213,12 +216,13 @@ fit2<-jordan(inputs[train],
 ```{r}
 plotIterativeError(fit2, main = "Error iterativo para 5 neuronas")
 ```
-La grafica anterior muestra que el error en el modelo JORDAN converge a cero, por lo que se espera un ajuste rápido del modelo. Esto indica que el modelo ha logrado aprender una representación correcta de los datos.
+La gráfica anterior muestra que el error en el modelo JORDAN converge a cero, por lo que se espera un ajuste rápido del modelo. Esto indica que el modelo ha logrado aprender una representación correcta de los datos.
 
-Se solicitan 10 capas ocultas y un factor de tasa de aprendizaje de 1. El resultado también se parcialmente a la serie original
 
 
 ### Desempeño del modelo JORDAN con datos de entrenamiento.
+
+Para identificar el desempeño del modelo JORDAN con datos de entrenamiento primero se elimina el conjunto de test de las neuronas con el objetivo de realizar el modelo con datos reales, después para interpretarlas correctamente (en horas reales de ausentismo) debemos desnormalizar, esto es invertir el escalamiento que hicimos al inicio por tanto las predicciones están en el mismo rango real.
 
 ```{r}
 # Se elimina el conjunto de test de las entradas y salidas de las neuronas para realizar el ajuste del modelo a los datos reales
@@ -243,8 +247,12 @@ pt3 <- plotly::plot_ly(x = 1:length(y_j_train), y = y_j_train, type = 'scatter',
 pt3
 ```
 
+
+En el grafico se muestra el modelo de red JORDAN junto con los datos de entrenamiento. Teniendo en cuenta que las líneas de puntos rojos serían las predicciones y la línea azul serían los valores reales, y el modelo funciona bien si ambas líneas están muy cerca, vemos que la línea roja (predicciones) sigue en parte la forma de la línea negra (datos reales), especialmente en zonas de baja variación, sin embargo, se observan varios picos exagerados en la línea de predicción, que no están presentes en los datos reales. Entre las observaciones entre 90 a 130 y cerca de 180, la red hace predicciones muy altas o negativas, incluso llegando a más de 600 o menos de -100, mientras que los datos reales se mantienen mucho más bajos. En general, el modelo intenta capturar la forma, pero sufre de inestabilidad o exceso de sensibilidad a ciertos patrones, lo cual puede ser síntoma de sobreajuste o mal entrenamiento.
+
 ### Desempeño del modelo JORDAN con datos de prueba.
 
+Análogamente se realiza el mismo procedimiento que se hizo con los datos de entrenamiento, solo cambia los datos. En este momento se pone aprueba el modelo con el objetivo de identificar la precisión sobre los datos nuevos. 
 
 ```{r}
 # se elimina el conjunto de test de las entradas y salidas de las neuronas para realizar el ajuste del modelo a los datos reales
@@ -269,6 +277,7 @@ pt4 <- plotly::plot_ly(x = 1:length(y_j_test), y = y_j_test, type = 'scatter', m
 pt4
 ```
 
+En la gráfica podemos visualizar que la línea negra (datos reales) es bastante estable y se mantiene en valores bajos, mientras que la línea roja (predicciones) muestra mucha más variación y se aleja notablemente de los valores reales en muchos puntos. Se observan picos de predicción de más de 2000, cuando los valores reales no superan los 100 en la mayoría de las observaciones, esto sugiere que el modelo tiene alta varianza y probablemente está sobreajustando o captando ruido en lugar de patrones reales. Aunque los valores reales tienen ligeros picos y cambios, el modelo no los sigue, las predicciones muestran una dinámica completamente diferente, con cambios abruptos que no reflejan la tendencia real, en resumen, el modelo JORDAN no está prediciendo con precisión los valores reales, las predicciones están sobreestimando fuertemente en muchas observaciones.
 
 
 ## Rendimiento Redes ELMAN y JORDAN
@@ -318,7 +327,35 @@ cat("ACF1 :", round(acf1, 4), "\n")
 
 ```
 
+** MAE (Mean Absolute Error)**
+
+ELMAN: 16.7244 JORDAN: 172.283
+- ELMAN muestra un menor error absoluto medio.
+
+**RMSE (Root Mean Square Error):**
+ELMAN: 34.0165 JORDAN: 407,6752
+- ELMAN tiene un RMSE menor, indicando menor variación entre predicciones y valores reales.
+
+**ME (Mean Error)**
+ELMAN:0.2568  JORDAN: -104.5171
+- El modelo JORDAN tiene un error medio más bajo, lo que indica que sus predicciones están, en promedio más cerca de los valores reales.
+
+**ACF1 (Autocorrelation of Residuals at Lag 1)**
+ELMAN: -0.081 JORDAN: 0.1833 
+- ELMAN muestra menor autocorrelación en los residuos, indicando que los errores están menos correlacionados y probablemente son más independientes.
+
+Con base en la comparación de métricas de rendimiento, se concluye que el modelo ELMAN supera significativamente al modelo JORDAN en la predicción del ausentismo laboral. ELMAN presenta un MAE (16.72) y un RMSE (34.01) considerablemente menores que los del modelo JORDAN (MAE: 172.28, RMSE: 407.68), lo cual indica un mejor ajuste general y menor dispersión en los errores de predicción.
+
+Aunque JORDAN muestra un ME negativo (-104.51), que podría interpretarse como una menor sobreestimación en promedio, este valor tan alto sugiere una gran desviación sistemática, mientras que el ME de ELMAN (0.25) está cerca de cero, lo que implica predicciones más equilibradas. Además, el menor valor de autocorrelación de los residuos (ACF1) en ELMAN (-0.081) frente a JORDAN (0.1833) indica que los errores del modelo ELMAN están menos correlacionados en el tiempo, y por tanto, es menos probable que haya patrones no capturados en los residuos.
+
+El modelo ELMAN es superior al modelo JORDAN en la mayoria de las métricas analizadas, mostrando menor error y mejor ajuste a los datos reales. Por lo tanto, ELMAN arroja mejores resultado al presentar el mejor rendimiento de los 2 modelos, indicando predicciones más precisas y cercanas a los valores reales del ausentismo laboral. Las redes Elman son bastante útiles para modelar datos secuenciales, ya que pueden incorporar información del contexto previo para realizar mejores predicciones.
+
+
 ### Conclusión
 
+La red neuronal JORDAN es un tipo de red recurrente que incorpora retroalimentación desde la capa de salida hacia una capa de contexto, lo que le permite mantener una memoria limitada del comportamiento pasado de la serie. Esta capacidad la hace especialmente valiosa en el análisis de series temporales, donde las observaciones anteriores influyen en las futuras. En este caso, en el modelo con los datos de entrenamiento, la red logra seguir la tendencia general en varios tramos, pero presenta picos artificiales extremos que no reflejan los datos reales, así mismo en los datos de prueba, las predicciones son mucho más erráticas y se alejan fuertemente de los valores reales. El modelo memoriza patrones del entrenamiento, pero no logra generalizar a nuevos datos. Esto es un claro indicio de overfitting. Por otro lado, en ambas gráficas, la red genera predicciones con valores extremadamente altos o bajos, incluso cuando los datos reales permanecen estables, este comportamiento sugiere que la red es demasiado sensible a pequeñas variaciones en la entrada o no está correctamente regularizada. La arquitectura o el preprocesamiento pueden estar mal ajustados. Es probable que se necesite una normalización más robusta, menos neuronas ocultas o aplicar regularización. Además, la variable de estudio tiene una dinámica relativamente estable con algunos picos, pero la red JORDAN no logra anticipar ni seguir coherentemente esos patrones. Esto puede deberse a una mala elección del número de rezagos (lags) o a que la red no está explotando bien la dependencia temporal.
 
+ELMAN ofrece mejores resultados al lograr mayor precisión y menor error en las predicciones. Este desempeño se debe a su capacidad para modelar relaciones secuenciales en los datos, haciendo uso de la retroalimentación interna que caracteriza a las redes recurrentes. Por lo tanto en este caso se consideraría una alternativa más robusta para tareas de pronóstico basadas en series temporales como el ausentismo laboral, aunque su predicción tampoco es muy precisa. Es importante considerar aspectos como el sobreajuste (overfitting) y el ajuste de hiperparámetros para asegurar que el modelo ELMAN no solo funcione bien sobre los datos de entrenamiento, sino que también generalice adecuadamente en nuevos datos.
+
+Para optimizar estos parámetros en ELMAN, es recomendable utilizar técnicas como búsqueda en rejilla (grid search) o búsqueda aleatoria (random search), idealmente combinadas con validación cruzada. Estas técnicas permiten explorar combinaciones y encontrar la configuración que proporciona el mejor rendimiento de generalización.
 
