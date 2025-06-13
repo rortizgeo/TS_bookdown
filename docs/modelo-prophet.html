@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-06-08" />
+<meta name="date" content="2025-06-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -260,42 +260,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Debido a que el modelo Prophet no opera directamente sobre objetos del tipo ts de R, sino sobre data frames, se utiliza una versión tabular de la serie temporal (serie_diaria). Para que Prophet pueda identificar correctamente las variables de fecha y valor, es obligatorio que las columnas se llamen ds (date stamp) y y (value). Por lo tanto, se realiza una transformación previa del conjunto de datos, renombrando las columnas correspondientes. Esta preparación garantiza que Prophet interprete adecuadamente la estructura temporal de la serie para modelar tendencias, estacionalidades y generar pronósticos de forma efectiva.</p>
 <p>A continuación se genera el modelado de la serie temporal diaria de ausencia laboral en horas, y que incluye un componente de estacionalidad semanal para capturar patrones con esa frecuencia.</p>
 <p>Debido a las características de los datos, se deicidió incluir un componentes mensual que odría mejorar el modelo. El siguiente código muestra la inicialización del modelo y su configuración.</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="modelo-prophet.html#cb55-1" tabindex="-1"></a><span class="co">#Debido a que prophet se ejecuta sobre un dataframe y no un archivo tipo ts se usa serie_diaria. </span></span>
-<span id="cb55-2"><a href="modelo-prophet.html#cb55-2" tabindex="-1"></a><span class="co">#Prophet requiere usar nombres específicos para las columnas, se hace la respectiva transformación.</span></span>
-<span id="cb55-3"><a href="modelo-prophet.html#cb55-3" tabindex="-1"></a><span class="co"># Validar columnas</span></span>
-<span id="cb55-4"><a href="modelo-prophet.html#cb55-4" tabindex="-1"></a><span class="fu">names</span>(serie_diaria) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ds&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
-<span id="cb55-5"><a href="modelo-prophet.html#cb55-5" tabindex="-1"></a></span>
-<span id="cb55-6"><a href="modelo-prophet.html#cb55-6" tabindex="-1"></a><span class="co"># Filtrar valores válidos</span></span>
-<span id="cb55-7"><a href="modelo-prophet.html#cb55-7" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> serie_diaria[<span class="sc">!</span><span class="fu">is.na</span>(serie_diaria<span class="sc">$</span>ds) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(serie_diaria<span class="sc">$</span>y), ]</span>
-<span id="cb55-8"><a href="modelo-prophet.html#cb55-8" tabindex="-1"></a></span>
-<span id="cb55-9"><a href="modelo-prophet.html#cb55-9" tabindex="-1"></a><span class="co"># Confirmar que hay datos después del filtrado</span></span>
-<span id="cb55-10"><a href="modelo-prophet.html#cb55-10" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(serie_diaria) <span class="sc">==</span> <span class="dv">0</span>) {</span>
-<span id="cb55-11"><a href="modelo-prophet.html#cb55-11" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;El dataframe `serie_diaria` está vacío después de limpiar valores NA.&quot;</span>)</span>
-<span id="cb55-12"><a href="modelo-prophet.html#cb55-12" tabindex="-1"></a>}</span>
-<span id="cb55-13"><a href="modelo-prophet.html#cb55-13" tabindex="-1"></a></span>
-<span id="cb55-14"><a href="modelo-prophet.html#cb55-14" tabindex="-1"></a><span class="co"># Asegurar que `ds` es Date y `y` es numérico</span></span>
-<span id="cb55-15"><a href="modelo-prophet.html#cb55-15" tabindex="-1"></a>serie_diaria<span class="sc">$</span>ds <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(serie_diaria<span class="sc">$</span>ds)</span>
-<span id="cb55-16"><a href="modelo-prophet.html#cb55-16" tabindex="-1"></a>serie_diaria<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(serie_diaria<span class="sc">$</span>y)</span>
-<span id="cb55-17"><a href="modelo-prophet.html#cb55-17" tabindex="-1"></a></span>
-<span id="cb55-18"><a href="modelo-prophet.html#cb55-18" tabindex="-1"></a><span class="co"># Inicializar modelo</span></span>
-<span id="cb55-19"><a href="modelo-prophet.html#cb55-19" tabindex="-1"></a>model_prophet <span class="ot">&lt;-</span> prophet<span class="sc">::</span><span class="fu">prophet</span> (</span>
-<span id="cb55-20"><a href="modelo-prophet.html#cb55-20" tabindex="-1"></a>  <span class="at">weekly.seasonality =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb55-21"><a href="modelo-prophet.html#cb55-21" tabindex="-1"></a>  <span class="at">daily.seasonality =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb55-22"><a href="modelo-prophet.html#cb55-22" tabindex="-1"></a>  <span class="at">yearly.seasonality =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb55-23"><a href="modelo-prophet.html#cb55-23" tabindex="-1"></a>  <span class="at">seasonality.mode =</span> <span class="st">&#39;additive&#39;</span>,</span>
-<span id="cb55-24"><a href="modelo-prophet.html#cb55-24" tabindex="-1"></a>  <span class="at">seasonality.prior.scale =</span> <span class="dv">10</span></span>
-<span id="cb55-25"><a href="modelo-prophet.html#cb55-25" tabindex="-1"></a>)</span>
-<span id="cb55-26"><a href="modelo-prophet.html#cb55-26" tabindex="-1"></a></span>
-<span id="cb55-27"><a href="modelo-prophet.html#cb55-27" tabindex="-1"></a><span class="co"># Agregar estacionalidad mensual</span></span>
-<span id="cb55-28"><a href="modelo-prophet.html#cb55-28" tabindex="-1"></a>model_prophet <span class="ot">&lt;-</span> <span class="fu">add_seasonality</span>(</span>
-<span id="cb55-29"><a href="modelo-prophet.html#cb55-29" tabindex="-1"></a>  model_prophet,</span>
-<span id="cb55-30"><a href="modelo-prophet.html#cb55-30" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">&quot;monthly&quot;</span>,</span>
-<span id="cb55-31"><a href="modelo-prophet.html#cb55-31" tabindex="-1"></a>  <span class="at">period =</span> <span class="fl">30.5</span>,</span>
-<span id="cb55-32"><a href="modelo-prophet.html#cb55-32" tabindex="-1"></a>  <span class="at">fourier.order =</span> <span class="dv">3</span></span>
-<span id="cb55-33"><a href="modelo-prophet.html#cb55-33" tabindex="-1"></a>)</span>
-<span id="cb55-34"><a href="modelo-prophet.html#cb55-34" tabindex="-1"></a></span>
-<span id="cb55-35"><a href="modelo-prophet.html#cb55-35" tabindex="-1"></a><span class="co"># Ajustar el modelo</span></span>
-<span id="cb55-36"><a href="modelo-prophet.html#cb55-36" tabindex="-1"></a>model_prophet <span class="ot">&lt;-</span> <span class="fu">fit.prophet</span>(model_prophet, serie_diaria)</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="modelo-prophet.html#cb56-1" tabindex="-1"></a><span class="co">#Debido a que prophet se ejecuta sobre un dataframe y no un archivo tipo ts se usa serie_diaria. </span></span>
+<span id="cb56-2"><a href="modelo-prophet.html#cb56-2" tabindex="-1"></a><span class="co">#Prophet requiere usar nombres específicos para las columnas, se hace la respectiva transformación.</span></span>
+<span id="cb56-3"><a href="modelo-prophet.html#cb56-3" tabindex="-1"></a><span class="co"># Validar columnas</span></span>
+<span id="cb56-4"><a href="modelo-prophet.html#cb56-4" tabindex="-1"></a><span class="fu">names</span>(serie_diaria) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ds&quot;</span>, <span class="st">&quot;y&quot;</span>)</span>
+<span id="cb56-5"><a href="modelo-prophet.html#cb56-5" tabindex="-1"></a></span>
+<span id="cb56-6"><a href="modelo-prophet.html#cb56-6" tabindex="-1"></a><span class="co"># Filtrar valores válidos</span></span>
+<span id="cb56-7"><a href="modelo-prophet.html#cb56-7" tabindex="-1"></a>serie_diaria <span class="ot">&lt;-</span> serie_diaria[<span class="sc">!</span><span class="fu">is.na</span>(serie_diaria<span class="sc">$</span>ds) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(serie_diaria<span class="sc">$</span>y), ]</span>
+<span id="cb56-8"><a href="modelo-prophet.html#cb56-8" tabindex="-1"></a></span>
+<span id="cb56-9"><a href="modelo-prophet.html#cb56-9" tabindex="-1"></a><span class="co"># Confirmar que hay datos después del filtrado</span></span>
+<span id="cb56-10"><a href="modelo-prophet.html#cb56-10" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">nrow</span>(serie_diaria) <span class="sc">==</span> <span class="dv">0</span>) {</span>
+<span id="cb56-11"><a href="modelo-prophet.html#cb56-11" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;El dataframe `serie_diaria` está vacío después de limpiar valores NA.&quot;</span>)</span>
+<span id="cb56-12"><a href="modelo-prophet.html#cb56-12" tabindex="-1"></a>}</span>
+<span id="cb56-13"><a href="modelo-prophet.html#cb56-13" tabindex="-1"></a></span>
+<span id="cb56-14"><a href="modelo-prophet.html#cb56-14" tabindex="-1"></a><span class="co"># Asegurar que `ds` es Date y `y` es numérico</span></span>
+<span id="cb56-15"><a href="modelo-prophet.html#cb56-15" tabindex="-1"></a>serie_diaria<span class="sc">$</span>ds <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(serie_diaria<span class="sc">$</span>ds)</span>
+<span id="cb56-16"><a href="modelo-prophet.html#cb56-16" tabindex="-1"></a>serie_diaria<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(serie_diaria<span class="sc">$</span>y)</span>
+<span id="cb56-17"><a href="modelo-prophet.html#cb56-17" tabindex="-1"></a></span>
+<span id="cb56-18"><a href="modelo-prophet.html#cb56-18" tabindex="-1"></a><span class="co"># Inicializar modelo</span></span>
+<span id="cb56-19"><a href="modelo-prophet.html#cb56-19" tabindex="-1"></a>model_prophet <span class="ot">&lt;-</span> prophet<span class="sc">::</span><span class="fu">prophet</span> (</span>
+<span id="cb56-20"><a href="modelo-prophet.html#cb56-20" tabindex="-1"></a>  <span class="at">weekly.seasonality =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb56-21"><a href="modelo-prophet.html#cb56-21" tabindex="-1"></a>  <span class="at">daily.seasonality =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb56-22"><a href="modelo-prophet.html#cb56-22" tabindex="-1"></a>  <span class="at">yearly.seasonality =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb56-23"><a href="modelo-prophet.html#cb56-23" tabindex="-1"></a>  <span class="at">seasonality.mode =</span> <span class="st">&#39;additive&#39;</span>,</span>
+<span id="cb56-24"><a href="modelo-prophet.html#cb56-24" tabindex="-1"></a>  <span class="at">seasonality.prior.scale =</span> <span class="dv">10</span></span>
+<span id="cb56-25"><a href="modelo-prophet.html#cb56-25" tabindex="-1"></a>)</span>
+<span id="cb56-26"><a href="modelo-prophet.html#cb56-26" tabindex="-1"></a></span>
+<span id="cb56-27"><a href="modelo-prophet.html#cb56-27" tabindex="-1"></a><span class="co"># Agregar estacionalidad mensual</span></span>
+<span id="cb56-28"><a href="modelo-prophet.html#cb56-28" tabindex="-1"></a>model_prophet <span class="ot">&lt;-</span> <span class="fu">add_seasonality</span>(</span>
+<span id="cb56-29"><a href="modelo-prophet.html#cb56-29" tabindex="-1"></a>  model_prophet,</span>
+<span id="cb56-30"><a href="modelo-prophet.html#cb56-30" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">&quot;monthly&quot;</span>,</span>
+<span id="cb56-31"><a href="modelo-prophet.html#cb56-31" tabindex="-1"></a>  <span class="at">period =</span> <span class="fl">30.5</span>,</span>
+<span id="cb56-32"><a href="modelo-prophet.html#cb56-32" tabindex="-1"></a>  <span class="at">fourier.order =</span> <span class="dv">3</span></span>
+<span id="cb56-33"><a href="modelo-prophet.html#cb56-33" tabindex="-1"></a>)</span>
+<span id="cb56-34"><a href="modelo-prophet.html#cb56-34" tabindex="-1"></a></span>
+<span id="cb56-35"><a href="modelo-prophet.html#cb56-35" tabindex="-1"></a><span class="co"># Ajustar el modelo</span></span>
+<span id="cb56-36"><a href="modelo-prophet.html#cb56-36" tabindex="-1"></a>model_prophet <span class="ot">&lt;-</span> <span class="fu">fit.prophet</span>(model_prophet, serie_diaria)</span></code></pre></div>
 <p><strong>Interpretación del modelo Prophet</strong></p>
 <ul>
 <li><p><em>$growth = “linear”</em>:El modelo asume que la tendencia de la serie crece de manera lineal con el tiempo. Si quisieras un crecimiento que se estabiliza (sigmoide), usarías “logistic”.</p></li>
@@ -316,9 +316,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>A continuación se procede a hacer la predicción a partir del modelo entrenado. Sin embargo, hay que tener en cuenta que las predicciones a largo plazo (como un año) se vuelven más inciertas, porque no hay datos reales para “anclar” la tendencia reciente y el modelo Prophet proyecta con base en la tendencia lineal y estacionalidades pasadas, que pueden cambiar. De igual forma, los intervalos de confianza (yhat_lower, yhat_upper) se vuelven más amplios.</p>
 <p>Por esto, para este ejercicio solo se pronostica para un periodo de 90 días (3 meses), que corresponderían al primer trimestre del año 2008. De esta forma las predicciones están más cerca de los datos conocidos y la estacionalidad semanal se proyecta de forma más confiable con menor acumulación de error.</p>
 <p>En primera instancia se usa la función <em>make_future_dataframe</em> que crea un dataframe con fechas futuras que extiende el conjunto de datos históricos del modelo, pero no hace predicciones. En este caso extiende las fechas por 90 días en la columna <em>ds</em> incluyendo las fehcas de los datos originales.</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="modelo-prophet.html#cb56-1" tabindex="-1"></a><span class="co"># Construcción de dataframe con las fechas de los futuros periodos </span></span>
-<span id="cb56-2"><a href="modelo-prophet.html#cb56-2" tabindex="-1"></a>future <span class="ot">&lt;-</span> <span class="fu">make_future_dataframe</span>(model_prophet, <span class="at">periods =</span> <span class="dv">90</span>)</span>
-<span id="cb56-3"><a href="modelo-prophet.html#cb56-3" tabindex="-1"></a><span class="fu">tail</span>(future)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="modelo-prophet.html#cb57-1" tabindex="-1"></a><span class="co"># Construcción de dataframe con las fechas de los futuros periodos </span></span>
+<span id="cb57-2"><a href="modelo-prophet.html#cb57-2" tabindex="-1"></a>future <span class="ot">&lt;-</span> <span class="fu">make_future_dataframe</span>(model_prophet, <span class="at">periods =</span> <span class="dv">90</span>)</span>
+<span id="cb57-3"><a href="modelo-prophet.html#cb57-3" tabindex="-1"></a><span class="fu">tail</span>(future)</span></code></pre></div>
 <pre><code>##             ds
 ## 450 2008-03-25
 ## 451 2008-03-26
@@ -332,9 +332,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><strong>yhat</strong> (predicción)</li>
 <li><strong>yhat_lower</strong> &amp; <strong>yhat_upper</strong> (intervalo de confianza)</li>
 </ul>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="modelo-prophet.html#cb58-1" tabindex="-1"></a><span class="co"># Predicción de los valores futuros según el modelo generado, la variable y_hat es la predicción</span></span>
-<span id="cb58-2"><a href="modelo-prophet.html#cb58-2" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_prophet, future)</span>
-<span id="cb58-3"><a href="modelo-prophet.html#cb58-3" tabindex="-1"></a><span class="fu">tail</span>(forecast[<span class="fu">c</span>(<span class="st">&#39;ds&#39;</span>, <span class="st">&#39;yhat&#39;</span>, <span class="st">&#39;yhat_lower&#39;</span>, <span class="st">&#39;yhat_upper&#39;</span>)]) </span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="modelo-prophet.html#cb59-1" tabindex="-1"></a><span class="co"># Predicción de los valores futuros según el modelo generado, la variable y_hat es la predicción</span></span>
+<span id="cb59-2"><a href="modelo-prophet.html#cb59-2" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">predict</span>(model_prophet, future)</span>
+<span id="cb59-3"><a href="modelo-prophet.html#cb59-3" tabindex="-1"></a><span class="fu">tail</span>(forecast[<span class="fu">c</span>(<span class="st">&#39;ds&#39;</span>, <span class="st">&#39;yhat&#39;</span>, <span class="st">&#39;yhat_lower&#39;</span>, <span class="st">&#39;yhat_upper&#39;</span>)]) </span></code></pre></div>
 <pre><code>##             ds      yhat  yhat_lower yhat_upper
 ## 450 2008-03-25 26.815922  -0.1777552   58.97647
 ## 451 2008-03-26 24.641244  -5.3191383   55.30522
@@ -342,18 +342,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 453 2008-03-28 14.287679 -13.8409764   43.27521
 ## 454 2008-03-29 -1.746538 -31.7534695   27.03004
 ## 455 2008-03-30 -2.857669 -32.1631176   26.19366</code></pre>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="modelo-prophet.html#cb60-1" tabindex="-1"></a><span class="co"># Grafica</span></span>
-<span id="cb60-2"><a href="modelo-prophet.html#cb60-2" tabindex="-1"></a><span class="fu">plot</span>(model_prophet, forecast)</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="modelo-prophet.html#cb61-1" tabindex="-1"></a><span class="co"># Grafica</span></span>
+<span id="cb61-2"><a href="modelo-prophet.html#cb61-2" tabindex="-1"></a><span class="fu">plot</span>(model_prophet, forecast)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 <p>El gráfico de la predcción del modelo muestra una oscilación clara y regular en forma de picos y valles que se repite cada 7 días, lo cual indica que el modelo detectó una estacionalidad semanal, como se esperaba. Hay varios puntos negros muy por encima de la línea azul y del intervalo de confianza. Estos son días con picos inusuales de ausentismo, que el modelo no logra predecir bien. Por ejemplo, a mediados de 2007 y de nuevo hacia fines de año. Esto se vió también en el capítulo 4 cuando se construyó el modelo ARIMA.</p>
 <p>Adicionalmente, no se observó una tendencia claramente creciente o decreciente pues la línea azul parece mantenerse estable, lo que indica que Prophet no identificó una tendencia lineal fuerte en los datos.</p>
 <p>Respecto a la predicción, se observa que el intervalo de incertidumbre se ensancha gradualmente, lo que es esperado: el modelo es menos confiable mientras más lejos proyecta.</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="modelo-prophet.html#cb61-1" tabindex="-1"></a><span class="co"># se crea un grafico para observar la tendencia, estacionalidad semanal y estacionalidad anual</span></span>
-<span id="cb61-2"><a href="modelo-prophet.html#cb61-2" tabindex="-1"></a><span class="fu">prophet_plot_components</span>(model_prophet, forecast)</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="modelo-prophet.html#cb62-1" tabindex="-1"></a><span class="co"># se crea un grafico para observar la tendencia, estacionalidad semanal y estacionalidad anual</span></span>
+<span id="cb62-2"><a href="modelo-prophet.html#cb62-2" tabindex="-1"></a><span class="fu">prophet_plot_components</span>(model_prophet, forecast)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 <p>El gráfico de descomposión confirma los resultados mencionados anteriormente, a nivel semanal se evidencia el efecto del ausentismo a inicios de semana, con un mayor número de horas y menos frecuente hacía el final de la semana. A nivel anual pareciera haber una tendencia hacía la disminución en el número de horas de ausentismo. De igual manera, la predicción muestra el aumento en la incertidumbre a medida que se amplia el horizonte de predicción. A nivel mensual pareciera indicar un patrón constante en todas las semanas, excepto en la última semana del mes con una disminución en el total de horas de ausentismo.</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="modelo-prophet.html#cb62-1" tabindex="-1"></a><span class="co"># Se miran las escalas temporales con un grafico interactivo </span></span>
-<span id="cb62-2"><a href="modelo-prophet.html#cb62-2" tabindex="-1"></a><span class="fu">dyplot.prophet</span>(model_prophet, forecast)</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="modelo-prophet.html#cb63-1" tabindex="-1"></a><span class="co"># Se miran las escalas temporales con un grafico interactivo </span></span>
+<span id="cb63-2"><a href="modelo-prophet.html#cb63-2" tabindex="-1"></a><span class="fu">dyplot.prophet</span>(model_prophet, forecast)</span></code></pre></div>
 <pre><code>## Warning: `select_()` was deprecated in dplyr 0.7.0.
 ## ℹ Please use `select()` instead.
 ## ℹ The deprecated feature was likely used in the prophet package.

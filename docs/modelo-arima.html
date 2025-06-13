@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-06-08" />
+<meta name="date" content="2025-06-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -262,8 +262,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Partiendo de los resultado del capítulo 2, se estableció que la serie de tiempo asociada al caso de ausentismo es estacionaria según el resultado del test Dickey-Fuller. A continuación se aplica el modelo Arima</p>
 <div id="generación-del-modelo" class="section level2 hasAnchor" number="4.1">
 <h2><span class="header-section-number">4.1</span> Generación del modelo<a href="modelo-arima.html#generación-del-modelo" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="modelo-arima.html#cb37-1" tabindex="-1"></a>modelo_arima<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(ts_diaria)</span>
-<span id="cb37-2"><a href="modelo-arima.html#cb37-2" tabindex="-1"></a>modelo_arima</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="modelo-arima.html#cb38-1" tabindex="-1"></a>modelo_arima<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(ts_diaria)</span>
+<span id="cb38-2"><a href="modelo-arima.html#cb38-2" tabindex="-1"></a>modelo_arima</span></code></pre></div>
 <pre><code>## Series: ts_diaria 
 ## ARIMA(0,0,0)(0,0,2)[7] with non-zero mean 
 ## 
@@ -294,7 +294,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">4.2</span> Análisis de los residuos<a href="modelo-arima.html#análisis-de-los-residuos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Se requiere que los residuos del modelo —es decir, las diferencias entre los valores observados y los estimados— se comporten como ruido blanco. Esto significa que deben ser aleatorios, con media cero, varianza constante y sin correlación entre ellos. El cumplimiento de estos supuestos es esencial para garantizar la validez de las inferencias y pronósticos derivados del modelo ARIMA.</p>
 <p>Para comprobar si los residuos de un modelo ARIMA aplicado a ausentismo laboral, se comportan como ruido blanco se grafican los residuos y la función de autocorrelación ACF, como se muestra a continuación.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="modelo-arima.html#cb39-1" tabindex="-1"></a><span class="fu">checkresiduals</span>(modelo_arima)</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="modelo-arima.html#cb40-1" tabindex="-1"></a><span class="fu">checkresiduals</span>(modelo_arima)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <pre><code>## 
 ##  Ljung-Box test
@@ -305,13 +305,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## Model df: 2.   Total lags used: 14</code></pre>
 <p>La función de autocorrelación (ACF): mide la correlación entre una serie de tiempo y sus valores retrasados. La autocorrelacion proporciona información de como una observación del ausentismo influye en las siguientes observaciones. Al trazar esta serie diferenciada, se observa un valor alto en el lag 0, lo cuál es normal pues se compara la serie con sigo misma y se espera que los residuos estén correlacionados con ellos mismos. Para determinar el valor de q en un modelo ARIMA, se puede mirar el gráfico ACF y buscar el primer retraso que tiene una correlación significativa (es decir en donde se sobrepasen las lineas punteadas). En esta grafica se observa un Lag relevante de 21, indicando que hay una correlación significativa entre los valores actuales y los de hace 3 periodos (3 semanas atras). Este valor es interesante y puede estar asociado a la rotación de turnos (diario, tarde, nocturno). En general, esto mostraría que hay información no explicada por el modelo.</p>
 <p>Para la validacion del modelo se analiza que los residuos sean <em>Ruido Blanco</em>, es decir, que los residuos se distribuyen normalmente y no hay autocorrelación entre ellos. Para ello, se aplica la prueba de Shapiro para normalidad y la de Ljung-Box para mirar si los residuales cumplen el supuesto de independencia o estan autocorrelacionados</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="modelo-arima.html#cb41-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">resid</span>(modelo_arima), <span class="at">main =</span> <span class="st">&quot; Histrograma de residuos&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="modelo-arima.html#cb42-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">resid</span>(modelo_arima), <span class="at">main =</span> <span class="st">&quot; Histrograma de residuos&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="modelo-arima.html#cb42-1" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(modelo_arima))</span>
-<span id="cb42-2"><a href="modelo-arima.html#cb42-2" tabindex="-1"></a><span class="fu">qqline</span>(<span class="fu">resid</span>(modelo_arima), <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="modelo-arima.html#cb43-1" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">resid</span>(modelo_arima))</span>
+<span id="cb43-2"><a href="modelo-arima.html#cb43-2" tabindex="-1"></a><span class="fu">qqline</span>(<span class="fu">resid</span>(modelo_arima), <span class="at">col =</span> <span class="st">&quot;blue&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-26-2.png" width="672" />
 El Q-Q plot muestra que los puntos están dispersos en las colas (por ejemplo, hacia el extremo superior), esto puede implicar que hay más valores extremos de lo que se esperaría bajo una normalidad perfecta, y por ende podría ser una señal de que los residuos no son normales, lo cual puede sugerir que el modelo ARIMA no está capturando completamente la dinámica de la serie temporal y que se podría necesitar ajustes adicionales.</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="modelo-arima.html#cb43-1" tabindex="-1"></a><span class="fu">Box.test</span>(<span class="fu">resid</span>(modelo_arima), <span class="at">lag =</span> <span class="dv">10</span>, <span class="at">type =</span> <span class="st">&quot;Ljung-Box&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="modelo-arima.html#cb44-1" tabindex="-1"></a><span class="fu">Box.test</span>(<span class="fu">resid</span>(modelo_arima), <span class="at">lag =</span> <span class="dv">10</span>, <span class="at">type =</span> <span class="st">&quot;Ljung-Box&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Box-Ljung test
 ## 
@@ -327,19 +327,19 @@ El Q-Q plot muestra que los puntos están dispersos en las colas (por ejemplo, h
 <div id="punto-de-cambio-amoc" class="section level2 hasAnchor" number="4.3">
 <h2><span class="header-section-number">4.3</span> Punto de cambio (AMOC)<a href="modelo-arima.html#punto-de-cambio-amoc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A continuación se usa la función cpt.mean() del paquete changepoint en R, específicamente con el método “AMOC” (At Most One Change), para detectar cambios en la media de una serie temporal.</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="modelo-arima.html#cb45-1" tabindex="-1"></a>mval<span class="ot">&lt;-</span><span class="fu">cpt.mean</span>(ts_diaria,<span class="at">method =</span> <span class="st">&quot;AMOC&quot;</span>) </span>
-<span id="cb45-2"><a href="modelo-arima.html#cb45-2" tabindex="-1"></a><span class="fu">cpts</span>(mval)</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="modelo-arima.html#cb46-1" tabindex="-1"></a>mval<span class="ot">&lt;-</span><span class="fu">cpt.mean</span>(ts_diaria,<span class="at">method =</span> <span class="st">&quot;AMOC&quot;</span>) </span>
+<span id="cb46-2"><a href="modelo-arima.html#cb46-2" tabindex="-1"></a><span class="fu">cpts</span>(mval)</span></code></pre></div>
 <pre><code>## [1] 63</code></pre>
 <p>El resultado muestra que la serie ts_diaria tiene una ruptura (cambio estructural) en el valor medio en el dato número 63. Esto sugiere que antes y después de ese punto, los valores de la serie tienen medias significativamente diferentes. El método “AMOC” busca una única ruptura (At Most One Change), y detectó que la mejor ubicación para dividir la serie en dos segmentos con medias distintas es en el punto 63. A continuación se gráfica el resultado para ver el punto de ruptura.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="modelo-arima.html#cb47-1" tabindex="-1"></a><span class="fu">plot</span>(mval, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">cpt.col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Value&quot;</span>, <span class="at">cpt.width =</span> <span class="dv">4</span>, <span class="at">main =</span> <span class="st">&quot;default penalty&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="modelo-arima.html#cb48-1" tabindex="-1"></a><span class="fu">plot</span>(mval, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">cpt.col =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Value&quot;</span>, <span class="at">cpt.width =</span> <span class="dv">4</span>, <span class="at">main =</span> <span class="st">&quot;default penalty&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 <p>La gráfica muestra la serie con una línea vertical en el punto donde ocurre el cambio, y líneas horizontales indicando las medias antes y después. En este caso el valor 63 de la serie corresponde a la fecha: 2007-03-04, indicando un cambio significatoco en este día. Esta información puede ayudar a decidir si necesitas transformar o dividir la serie antes de ajustar un modelo ARIMA.</p>
 </div>
 <div id="predicción" class="section level2 hasAnchor" number="4.4">
 <h2><span class="header-section-number">4.4</span> Predicción<a href="modelo-arima.html#predicción" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Estos son los datos de ausentismo laboral proyectados para los siguientes 12 días utilizando el paquete forecast para la serie diaria.</p>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="modelo-arima.html#cb48-1" tabindex="-1"></a>pred<span class="ot">&lt;-</span><span class="fu">forecast</span>(modelo_arima, <span class="at">h=</span><span class="dv">12</span>, <span class="at">level =</span> <span class="dv">95</span>)</span>
-<span id="cb48-2"><a href="modelo-arima.html#cb48-2" tabindex="-1"></a>pred</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="modelo-arima.html#cb49-1" tabindex="-1"></a>pred<span class="ot">&lt;-</span><span class="fu">forecast</span>(modelo_arima, <span class="at">h=</span><span class="dv">12</span>, <span class="at">level =</span> <span class="dv">95</span>)</span>
+<span id="cb49-2"><a href="modelo-arima.html#cb49-2" tabindex="-1"></a>pred</span></code></pre></div>
 <pre><code>##          Point Forecast     Lo 95    Hi 95
 ## 53.14286       20.83206 -27.31579 68.97990
 ## 53.28571       12.74445 -35.40339 60.89229
@@ -353,8 +353,8 @@ El Q-Q plot muestra que los puntos están dispersos en las colas (por ejemplo, h
 ## 54.42857       14.62271 -33.76131 63.00674
 ## 54.57143       13.04233 -35.34170 61.42636
 ## 54.71429       12.51469 -35.86934 60.89871</code></pre>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="modelo-arima.html#cb50-1" tabindex="-1"></a><span class="fu">plot</span>(pred, <span class="at">main=</span><span class="st">&quot; &quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Horas&quot;</span>, <span class="at">col=</span><span class="st">&quot;deepskyblue&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Días&quot;</span>)</span>
-<span id="cb50-2"><a href="modelo-arima.html#cb50-2" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">&quot;Predicción de Ausentismo laboral&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="modelo-arima.html#cb51-1" tabindex="-1"></a><span class="fu">plot</span>(pred, <span class="at">main=</span><span class="st">&quot; &quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Horas&quot;</span>, <span class="at">col=</span><span class="st">&quot;deepskyblue&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Días&quot;</span>)</span>
+<span id="cb51-2"><a href="modelo-arima.html#cb51-2" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main=</span><span class="st">&quot;Predicción de Ausentismo laboral&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 <p>En esta grafica se especifica el horizonte de pronóstico de h periodos por delante para que se realicen las predicciones de ausentismo laboral. En este caso correspondiente a 12 días. En una análisis visual inicial, la predicción parace guardar concordancia con el pronóstico del resto de la serie.</p>
 <p>A continuación se hace un análisis de los valores atípicos en la serie, para lo cuál se hace uso de la función tso(), que busca outliers que afecten la estructura de la serie, especialmente aquellos que pueden influir negativamente en el ajuste de modelos ARIMA. Identifica:</p>
@@ -363,15 +363,15 @@ El Q-Q plot muestra que los puntos están dispersos en las colas (por ejemplo, h
 <li>LS = Level Shift: un cambio repentino y permanente en el nivel de la serie.</li>
 <li>TC = Temporary Change: un cambio brusco pero transitorio.</li>
 </ul>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="modelo-arima.html#cb51-1" tabindex="-1"></a>dat.ts<span class="ot">&lt;-</span> <span class="fu">ts</span>(ts_diaria,<span class="at">frequency=</span><span class="dv">1</span>) </span>
-<span id="cb51-2"><a href="modelo-arima.html#cb51-2" tabindex="-1"></a>data.ts.outliers <span class="ot">&lt;-</span> <span class="fu">tso</span>(dat.ts)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="modelo-arima.html#cb52-1" tabindex="-1"></a>dat.ts<span class="ot">&lt;-</span> <span class="fu">ts</span>(ts_diaria,<span class="at">frequency=</span><span class="dv">1</span>) </span>
+<span id="cb52-2"><a href="modelo-arima.html#cb52-2" tabindex="-1"></a>data.ts.outliers <span class="ot">&lt;-</span> <span class="fu">tso</span>(dat.ts)</span></code></pre></div>
 <pre><code>## Warning in locate.outliers.iloop(resid = resid, pars = pars, cval = cval, :
 ## stopped when &#39;maxit.iloop&#39; was reached
 ## Warning in locate.outliers.iloop(resid = resid, pars = pars, cval = cval, :
 ## stopped when &#39;maxit.iloop&#39; was reached</code></pre>
 <pre><code>## Warning in locate.outliers.oloop(y = y, fit = fit, types = types, cval = cval,
 ## : stopped when &#39;maxit.oloop = 4&#39; was reached</code></pre>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="modelo-arima.html#cb54-1" tabindex="-1"></a><span class="fu">plot</span>(data.ts.outliers)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="modelo-arima.html#cb55-1" tabindex="-1"></a><span class="fu">plot</span>(data.ts.outliers)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 <p>En el gráfico se observa:</p>
 <ul>

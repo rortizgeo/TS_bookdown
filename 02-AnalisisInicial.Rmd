@@ -199,20 +199,30 @@ ggplot(datos, aes(x = lag3, y = Absenteeism.time.in.hours)) +
 
 En estos gráficos podemos observar que los puntos son caóticos o dispersos en todos los rezagos, no hay dependencia fuerte en el rezago, es decir no hay mucha relación entre el valor actual y el pasado.
 
-vamos a graficar la *Autocorrelation Function (ACF)*, esto mide cuánta correlación existe entre la serie y sus propios rezagos.
+
+La ACF o Función de Autocorrelación (Autocorrelation Function) es una herramienta estadística utilizada para medir la correlación que existe entre una serie temporal y sus valores en distintos rezagos o lags. En otras palabras, nos dice qué tan relacionado está el valor actual de una serie con sus valores pasados.
+
+Vamos a graficar la *Autocorrelation Function (ACF)* para el caso del ausentismo laboral que representa en el eje X los distintos rezagos (lags) y en el eje Y la autocorrelación para el rezago​, que va de -1 a 1.
+
+
+
+- Barras altas y significativas: indican autocorrelación fuerte en ese rezago.
+
+- Líneas azules (límites de significancia): indican el intervalo donde la autocorrelación es estadísticamente insignificante (generalmente con un nivel de confianza del 95%). Si una barra sobresale de esas líneas, la autocorrelación es significativa.
+
+
 
 ```{r, warning=FALSE}
 acf(datos$Absenteeism.time.in.hours, na.action = na.pass, main = "ACF - Autocorrelación de ausencias")
 ```
 
-
-A partir del resultado del gráfico se interprta que no hay correlaciones significativas en los rezagos.
+A partir del resultado del gráfico se interpreta que no hay correlaciones significativas en los rezagos evaluandose para un periodo de 30 días (Equivalente a un mes).
 
 ## Análísis de estacionalidad
 
 La estacionalidad es un patrón repetitivo o cíclico que ocurre a intervalos regulares en una serie de tiempo, como cada semana, cada mes o cada año.
 
-En este caso, queremos ver si hay momentos del año (o del mes) en los que el ausentismo tiende a aumentar o disminuir sistemáticamente.Como en el conjunto de datos tenemos el mes (simulado con fechas) y las horas de ausentismo, podemos ver si ciertos meses muestran mayores ausencias que otros.
+En este caso, queremos ver si hay momentos del año (o del mes) en los que el ausentismo tiende a aumentar o disminuir sistemáticamente. Como en el conjunto de datos tenemos el mes (simulado con fechas) y las horas de ausentismo, podemos ver si ciertos meses muestran mayores ausencias que otros.
 
 
 ```{r, echo=FALSE}
@@ -250,14 +260,14 @@ datos %>%
 
 ```
 
-El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales. Sin embargo, al hacer el análisis semanal si parece observarse una tendencia de mayor ausentismo en los primeros días de la semana luego del fin de semana. 
+El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses que coinciden con la semana santa, las vacaciones de mitad de año y las vacaciones de Diciembre en los calendarios escoales. Sin embargo, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales. Sin embargo, al hacer el análisis semanal si parece observarse una tendencia de mayor ausentismo en los primeros días de la semana luego del fin de semana. 
 
 
 Para abordar esta sección del documento sobre análisis de series temporales con base en el conjunto de datos de ausentismo laboral de la UCI, ahora se evalurán otros análisis como la descomposición, estacionariedad y si es necesario se aplicarán las transformaciones necesarias. 
 
 ## Descomposición de la serie temporal
 
-Cualqier serie se puede descomponer en su parte estacional, de tendencia y residual. Exiten dos alternativas, una descomposición por adición y multiplicativa. Para ello usaremos la función descompose. 
+Cualquier serie se puede descomponer en su parte estacional, de tendencia y residual. Exiten dos alternativas, una descomposición por adición y multiplicativa. Para ello usaremos la función descompose. 
 
 En un modelo aditivo, la serie temporal se descompone en:
 
@@ -307,7 +317,8 @@ descomp <- decompose(ts_diaria, type = "additive")
 # Graficar resultado
 plot(descomp)
 ```
-A continuación se analizan los resultados obtenidos en el gráfico de descomposición de la serie temporal que representa, en el eje _x_, el índice temporal de observación, que en este caso es semanal (es decir, cada punto es una semana del año). El eje _y_ representa el número total de horas de ausentismos laboral por semana que llegan a alcanzar hasta las 150 semanas, indicando semanas con alta acumulación de horas de ausencia. 
+
+A continuación se analizan los resultados obtenidos en el gráfico de descomposición de la serie temporal que representa, en el eje _x_, el índice temporal de observación, que en este caso es semanal (es decir, cada punto es una semana del año). El eje _y_ representa el número total de horas de ausentismos laboral por semana que llegan a alcanzar hasta las 150 horas, indicando semanas con alta acumulación de horas de ausencia. 
 
 _Observed (Observada)_:
 La serie original presenta variaciones notables, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.

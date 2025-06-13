@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-06-08" />
+<meta name="date" content="2025-06-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -259,37 +259,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><em>Error cuadrático medio (MASE – Mean Square Error)</em>: Corrige tambien las inexactitudes del error medio y comparado con el MAE otorga una mayor penalización en los errores de predicción grandes.</p></li>
 <li><p><em>Autocorrelacion (ACF1)</em>: Es un coeficiente de correlacion entre una observacion actual y sus valores retardados en distintos momentos. Mide la similitud entre la observacion actual y sus valores pasados, indicando la presencia de patrones o tendencias repetitivos en los datos.</p></li>
 </ul>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="capitulo-6-comparacion-de-modelos.html#cb64-1" tabindex="-1"></a><span class="co"># Asegurarse que los datos tienen las columnas ds (fecha)  y (valor)</span></span>
-<span id="cb64-2"><a href="capitulo-6-comparacion-de-modelos.html#cb64-2" tabindex="-1"></a><span class="co"># Convertir el ts a tsibble para que pueda ser usado con la librería fable</span></span>
-<span id="cb64-3"><a href="capitulo-6-comparacion-de-modelos.html#cb64-3" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">as_tsibble</span>(serie_diaria, <span class="at">index =</span> ds)</span>
-<span id="cb64-4"><a href="capitulo-6-comparacion-de-modelos.html#cb64-4" tabindex="-1"></a></span>
-<span id="cb64-5"><a href="capitulo-6-comparacion-de-modelos.html#cb64-5" tabindex="-1"></a><span class="co"># Filtrar datos solo del año 2007 si fuera necesario (opcional si ya está limpio)</span></span>
-<span id="cb64-6"><a href="capitulo-6-comparacion-de-modelos.html#cb64-6" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
-<span id="cb64-7"><a href="capitulo-6-comparacion-de-modelos.html#cb64-7" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">year</span>(ds) <span class="sc">==</span> <span class="dv">2007</span>)</span>
-<span id="cb64-8"><a href="capitulo-6-comparacion-de-modelos.html#cb64-8" tabindex="-1"></a></span>
-<span id="cb64-9"><a href="capitulo-6-comparacion-de-modelos.html#cb64-9" tabindex="-1"></a><span class="co"># Dividir el conjunto: entrenamiento (enero a septiembre), test (octubre a diciembre)</span></span>
-<span id="cb64-10"><a href="capitulo-6-comparacion-de-modelos.html#cb64-10" tabindex="-1"></a>train <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
-<span id="cb64-11"><a href="capitulo-6-comparacion-de-modelos.html#cb64-11" tabindex="-1"></a>  <span class="fu">filter</span>(ds <span class="sc">&lt;</span> <span class="fu">ymd</span>(<span class="st">&quot;2007-10-01&quot;</span>))</span>
-<span id="cb64-12"><a href="capitulo-6-comparacion-de-modelos.html#cb64-12" tabindex="-1"></a></span>
-<span id="cb64-13"><a href="capitulo-6-comparacion-de-modelos.html#cb64-13" tabindex="-1"></a>test <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
-<span id="cb64-14"><a href="capitulo-6-comparacion-de-modelos.html#cb64-14" tabindex="-1"></a>  <span class="fu">filter</span>(ds <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">&quot;2007-10-01&quot;</span>))</span>
-<span id="cb64-15"><a href="capitulo-6-comparacion-de-modelos.html#cb64-15" tabindex="-1"></a></span>
-<span id="cb64-16"><a href="capitulo-6-comparacion-de-modelos.html#cb64-16" tabindex="-1"></a><span class="co"># Ajustar los modelos con los datos de entrenamiento</span></span>
-<span id="cb64-17"><a href="capitulo-6-comparacion-de-modelos.html#cb64-17" tabindex="-1"></a>fit <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
-<span id="cb64-18"><a href="capitulo-6-comparacion-de-modelos.html#cb64-18" tabindex="-1"></a>  <span class="fu">model</span>(</span>
-<span id="cb64-19"><a href="capitulo-6-comparacion-de-modelos.html#cb64-19" tabindex="-1"></a>    <span class="at">arima =</span> <span class="fu">ARIMA</span>(y),</span>
-<span id="cb64-20"><a href="capitulo-6-comparacion-de-modelos.html#cb64-20" tabindex="-1"></a>    <span class="at">ets =</span> <span class="fu">ETS</span>(y),</span>
-<span id="cb64-21"><a href="capitulo-6-comparacion-de-modelos.html#cb64-21" tabindex="-1"></a>    <span class="at">prophet =</span> <span class="fu">prophet</span>(y <span class="sc">~</span> <span class="fu">season</span>(<span class="st">&quot;week&quot;</span>))</span>
-<span id="cb64-22"><a href="capitulo-6-comparacion-de-modelos.html#cb64-22" tabindex="-1"></a>  )</span></code></pre></div>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="capitulo-6-comparacion-de-modelos.html#cb65-1" tabindex="-1"></a><span class="co"># Predecir el mismo horizonte que test (ej: 92 días para octubre-diciembre)</span></span>
-<span id="cb65-2"><a href="capitulo-6-comparacion-de-modelos.html#cb65-2" tabindex="-1"></a>forecast_fit <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit, <span class="at">h =</span> <span class="fu">nrow</span>(test))</span>
-<span id="cb65-3"><a href="capitulo-6-comparacion-de-modelos.html#cb65-3" tabindex="-1"></a></span>
-<span id="cb65-4"><a href="capitulo-6-comparacion-de-modelos.html#cb65-4" tabindex="-1"></a><span class="co"># Visualizar comparación entre predicción y datos reales</span></span>
-<span id="cb65-5"><a href="capitulo-6-comparacion-de-modelos.html#cb65-5" tabindex="-1"></a><span class="fu">autoplot</span>(forecast_fit, ts_diaria) <span class="sc">+</span></span>
-<span id="cb65-6"><a href="capitulo-6-comparacion-de-modelos.html#cb65-6" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Comparación de modelos: predicción vs. datos reales&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="capitulo-6-comparacion-de-modelos.html#cb65-1" tabindex="-1"></a><span class="co"># Asegurarse que los datos tienen las columnas ds (fecha)  y (valor)</span></span>
+<span id="cb65-2"><a href="capitulo-6-comparacion-de-modelos.html#cb65-2" tabindex="-1"></a><span class="co"># Convertir el ts a tsibble para que pueda ser usado con la librería fable</span></span>
+<span id="cb65-3"><a href="capitulo-6-comparacion-de-modelos.html#cb65-3" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> <span class="fu">as_tsibble</span>(serie_diaria, <span class="at">index =</span> ds)</span>
+<span id="cb65-4"><a href="capitulo-6-comparacion-de-modelos.html#cb65-4" tabindex="-1"></a></span>
+<span id="cb65-5"><a href="capitulo-6-comparacion-de-modelos.html#cb65-5" tabindex="-1"></a><span class="co"># Filtrar datos solo del año 2007 si fuera necesario (opcional si ya está limpio)</span></span>
+<span id="cb65-6"><a href="capitulo-6-comparacion-de-modelos.html#cb65-6" tabindex="-1"></a>ts_diaria <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb65-7"><a href="capitulo-6-comparacion-de-modelos.html#cb65-7" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">year</span>(ds) <span class="sc">==</span> <span class="dv">2007</span>)</span>
+<span id="cb65-8"><a href="capitulo-6-comparacion-de-modelos.html#cb65-8" tabindex="-1"></a></span>
+<span id="cb65-9"><a href="capitulo-6-comparacion-de-modelos.html#cb65-9" tabindex="-1"></a><span class="co"># Dividir el conjunto: entrenamiento (enero a septiembre), test (octubre a diciembre)</span></span>
+<span id="cb65-10"><a href="capitulo-6-comparacion-de-modelos.html#cb65-10" tabindex="-1"></a>train <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb65-11"><a href="capitulo-6-comparacion-de-modelos.html#cb65-11" tabindex="-1"></a>  <span class="fu">filter</span>(ds <span class="sc">&lt;</span> <span class="fu">ymd</span>(<span class="st">&quot;2007-10-01&quot;</span>))</span>
+<span id="cb65-12"><a href="capitulo-6-comparacion-de-modelos.html#cb65-12" tabindex="-1"></a></span>
+<span id="cb65-13"><a href="capitulo-6-comparacion-de-modelos.html#cb65-13" tabindex="-1"></a>test <span class="ot">&lt;-</span> ts_diaria <span class="sc">%&gt;%</span></span>
+<span id="cb65-14"><a href="capitulo-6-comparacion-de-modelos.html#cb65-14" tabindex="-1"></a>  <span class="fu">filter</span>(ds <span class="sc">&gt;=</span> <span class="fu">ymd</span>(<span class="st">&quot;2007-10-01&quot;</span>))</span>
+<span id="cb65-15"><a href="capitulo-6-comparacion-de-modelos.html#cb65-15" tabindex="-1"></a></span>
+<span id="cb65-16"><a href="capitulo-6-comparacion-de-modelos.html#cb65-16" tabindex="-1"></a><span class="co"># Ajustar los modelos con los datos de entrenamiento</span></span>
+<span id="cb65-17"><a href="capitulo-6-comparacion-de-modelos.html#cb65-17" tabindex="-1"></a>fit <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb65-18"><a href="capitulo-6-comparacion-de-modelos.html#cb65-18" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb65-19"><a href="capitulo-6-comparacion-de-modelos.html#cb65-19" tabindex="-1"></a>    <span class="at">arima =</span> <span class="fu">ARIMA</span>(y),</span>
+<span id="cb65-20"><a href="capitulo-6-comparacion-de-modelos.html#cb65-20" tabindex="-1"></a>    <span class="at">ets =</span> <span class="fu">ETS</span>(y),</span>
+<span id="cb65-21"><a href="capitulo-6-comparacion-de-modelos.html#cb65-21" tabindex="-1"></a>    <span class="at">prophet =</span> <span class="fu">prophet</span>(y <span class="sc">~</span> <span class="fu">season</span>(<span class="st">&quot;week&quot;</span>))</span>
+<span id="cb65-22"><a href="capitulo-6-comparacion-de-modelos.html#cb65-22" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="capitulo-6-comparacion-de-modelos.html#cb66-1" tabindex="-1"></a><span class="co"># Predecir el mismo horizonte que test (ej: 92 días para octubre-diciembre)</span></span>
+<span id="cb66-2"><a href="capitulo-6-comparacion-de-modelos.html#cb66-2" tabindex="-1"></a>forecast_fit <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit, <span class="at">h =</span> <span class="fu">nrow</span>(test))</span>
+<span id="cb66-3"><a href="capitulo-6-comparacion-de-modelos.html#cb66-3" tabindex="-1"></a></span>
+<span id="cb66-4"><a href="capitulo-6-comparacion-de-modelos.html#cb66-4" tabindex="-1"></a><span class="co"># Visualizar comparación entre predicción y datos reales</span></span>
+<span id="cb66-5"><a href="capitulo-6-comparacion-de-modelos.html#cb66-5" tabindex="-1"></a><span class="fu">autoplot</span>(forecast_fit, ts_diaria) <span class="sc">+</span></span>
+<span id="cb66-6"><a href="capitulo-6-comparacion-de-modelos.html#cb66-6" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&quot;Comparación de modelos: predicción vs. datos reales&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="capitulo-6-comparacion-de-modelos.html#cb66-1" tabindex="-1"></a>accuracy_table <span class="ot">&lt;-</span> forecast<span class="sc">::</span><span class="fu">accuracy</span>(forecast_fit, test)</span>
-<span id="cb66-2"><a href="capitulo-6-comparacion-de-modelos.html#cb66-2" tabindex="-1"></a><span class="fu">print</span>(accuracy_table)</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="capitulo-6-comparacion-de-modelos.html#cb67-1" tabindex="-1"></a>accuracy_table <span class="ot">&lt;-</span> forecast<span class="sc">::</span><span class="fu">accuracy</span>(forecast_fit, test)</span>
+<span id="cb67-2"><a href="capitulo-6-comparacion-de-modelos.html#cb67-2" tabindex="-1"></a><span class="fu">print</span>(accuracy_table)</span></code></pre></div>
 <pre><code>## # A tibble: 3 × 10
 ##   .model  .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE    ACF1
 ##   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;

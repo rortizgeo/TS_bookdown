@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-06-08" />
+<meta name="date" content="2025-06-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -266,38 +266,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>Para analizar el comportamiento de los datos se intenta realizar una transformación logarítmica. Sin embargo, debido a que la variable de ausencia tiene valores de 0, esta transformación no es posible ya que cuando se trabaja con series temporales donde la variable objetivo contiene ceros, las transformaciones tradicionales como el logaritmo fallan porque log(0) = -∞</p>
 <p>En ese sentido, se debe recurrir a otro tipo de transformación que no genere modificaciones profundas en los datos, para ello, se hace uso de una técnica</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="predicciones.html#cb29-1" tabindex="-1"></a><span class="co"># Versión optimizada (encontrar c óptimo)</span></span>
+<span id="cb29-2"><a href="predicciones.html#cb29-2" tabindex="-1"></a>c_opt <span class="ot">&lt;-</span> <span class="fu">min</span>(ts_diaria[ts_diaria <span class="sc">&gt;</span> <span class="dv">0</span>])<span class="sc">/</span><span class="dv">2</span>  <span class="co"># Mitad del valor mínimo positivo</span></span>
+<span id="cb29-3"><a href="predicciones.html#cb29-3" tabindex="-1"></a>ts_transf <span class="ot">&lt;-</span> <span class="fu">log</span>(ts_diaria <span class="sc">+</span> c_opt)</span>
+<span id="cb29-4"><a href="predicciones.html#cb29-4" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="predicciones.html#cb29-5" tabindex="-1"></a><span class="co">#Se usa funcion logaritmica para visualizar los datos</span></span>
+<span id="cb29-6"><a href="predicciones.html#cb29-6" tabindex="-1"></a><span class="fu">plot</span>(ts_transf, <span class="at">main =</span> <span class="st">&quot;Serie transformada con log&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p>Una desventaja de esta transformación es que puede crear un “hueco” artificial entre los ceros transformados y los valores pequeños positivos como se muestra en el gráfico. Adicionalmente, los coeficientes en modelos ajustados a datos transformados requieren interpretación cuidadosa. Sin embargo estos “huecos” son una representación fiel de la discontinuidad matemática entre cero y valores positivos, además de un indicador visual de la presencia de ceros en los datos originales que puede ser una propiedad deseable en muchos casos, ya que marca claramente la diferencia entre “cero” y “casi cero”.</p>
 <p>A continuación se aplica el método Holt-Winters y a partir de un gráfico intentamos observar como el modelo se ajusta a los datos originales. Posteriormente, se aplica el método a los datos tranformados.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="predicciones.html#cb29-1" tabindex="-1"></a><span class="co">#Se crea una nueva serie de datos muy cerca de los datos originales</span></span>
-<span id="cb29-2"><a href="predicciones.html#cb29-2" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="predicciones.html#cb29-3" tabindex="-1"></a><span class="co"># Configurar área de gráfico con 2 filas y 1 columna</span></span>
-<span id="cb29-4"><a href="predicciones.html#cb29-4" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))  <span class="co"># márgenes ajustados</span></span>
-<span id="cb29-5"><a href="predicciones.html#cb29-5" tabindex="-1"></a></span>
-<span id="cb29-6"><a href="predicciones.html#cb29-6" tabindex="-1"></a><span class="co"># Primera gráfica (serie original)</span></span>
-<span id="cb29-7"><a href="predicciones.html#cb29-7" tabindex="-1"></a>hw <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(ts_diaria)</span>
-<span id="cb29-8"><a href="predicciones.html#cb29-8" tabindex="-1"></a><span class="fu">plot</span>(hw, <span class="at">main =</span> <span class="st">&quot;Suavizamiento Holt-Winters - Serie Original&quot;</span>)</span>
-<span id="cb29-9"><a href="predicciones.html#cb29-9" tabindex="-1"></a></span>
-<span id="cb29-10"><a href="predicciones.html#cb29-10" tabindex="-1"></a><span class="co"># Segunda gráfica (serie transformada)</span></span>
-<span id="cb29-11"><a href="predicciones.html#cb29-11" tabindex="-1"></a>hwt <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(ts_transf)</span>
-<span id="cb29-12"><a href="predicciones.html#cb29-12" tabindex="-1"></a><span class="fu">plot</span>(hwt, <span class="at">main =</span> <span class="st">&quot;Suavizamiento Holt-Winters - Serie Transformada&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="predicciones.html#cb30-1" tabindex="-1"></a><span class="co">#Se crea una nueva serie de datos muy cerca de los datos originales</span></span>
+<span id="cb30-2"><a href="predicciones.html#cb30-2" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="predicciones.html#cb30-3" tabindex="-1"></a><span class="co"># Configurar área de gráfico con 2 filas y 1 columna</span></span>
+<span id="cb30-4"><a href="predicciones.html#cb30-4" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))  <span class="co"># márgenes ajustados</span></span>
+<span id="cb30-5"><a href="predicciones.html#cb30-5" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="predicciones.html#cb30-6" tabindex="-1"></a><span class="co"># Primera gráfica (serie original)</span></span>
+<span id="cb30-7"><a href="predicciones.html#cb30-7" tabindex="-1"></a>hw <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(ts_diaria)</span>
+<span id="cb30-8"><a href="predicciones.html#cb30-8" tabindex="-1"></a><span class="fu">plot</span>(hw, <span class="at">main =</span> <span class="st">&quot;Suavizamiento Holt-Winters - Serie Original&quot;</span>)</span>
+<span id="cb30-9"><a href="predicciones.html#cb30-9" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="predicciones.html#cb30-10" tabindex="-1"></a><span class="co"># Segunda gráfica (serie transformada)</span></span>
+<span id="cb30-11"><a href="predicciones.html#cb30-11" tabindex="-1"></a>hwt <span class="ot">&lt;-</span> <span class="fu">HoltWinters</span>(ts_transf)</span>
+<span id="cb30-12"><a href="predicciones.html#cb30-12" tabindex="-1"></a><span class="fu">plot</span>(hwt, <span class="at">main =</span> <span class="st">&quot;Suavizamiento Holt-Winters - Serie Transformada&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="predicciones.html#cb30-1" tabindex="-1"></a><span class="co"># Restaurar configuración gráfica</span></span>
-<span id="cb30-2"><a href="predicciones.html#cb30-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="predicciones.html#cb31-1" tabindex="-1"></a><span class="co"># Restaurar configuración gráfica</span></span>
+<span id="cb31-2"><a href="predicciones.html#cb31-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
 <p>Cómo se observa en el gráfico, el método Holt-Winter aplicado a los datos originales (ts_diaria) no se ajusta completamente a los picos de ausentismo que se presentan en algunos días. Una vez se aplica el suavizamiento (ts_transform), con el método antes descrito, vemos que el modelo tiende a ajustarse mejor al comportamiento original, aunque no del todo.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="predicciones.html#cb31-1" tabindex="-1"></a><span class="co"># Configurar área de gráficos (2 filas, 1 columna)</span></span>
-<span id="cb31-2"><a href="predicciones.html#cb31-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))  <span class="co"># Ajustar márgenes</span></span>
-<span id="cb31-3"><a href="predicciones.html#cb31-3" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="predicciones.html#cb31-4" tabindex="-1"></a><span class="co"># Gráfico del modelo original</span></span>
-<span id="cb31-5"><a href="predicciones.html#cb31-5" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(hw), <span class="at">main =</span> <span class="st">&quot;Modelo Holt-Winters - Serie Original&quot;</span>,</span>
-<span id="cb31-6"><a href="predicciones.html#cb31-6" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Valores&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Tiempo&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="predicciones.html#cb32-1" tabindex="-1"></a><span class="co"># Configurar área de gráficos (2 filas, 1 columna)</span></span>
+<span id="cb32-2"><a href="predicciones.html#cb32-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))  <span class="co"># Ajustar márgenes</span></span>
+<span id="cb32-3"><a href="predicciones.html#cb32-3" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="predicciones.html#cb32-4" tabindex="-1"></a><span class="co"># Gráfico del modelo original</span></span>
+<span id="cb32-5"><a href="predicciones.html#cb32-5" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(hw), <span class="at">main =</span> <span class="st">&quot;Modelo Holt-Winters - Serie Original&quot;</span>,</span>
+<span id="cb32-6"><a href="predicciones.html#cb32-6" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Valores&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Tiempo&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="predicciones.html#cb32-1" tabindex="-1"></a><span class="co"># Gráfico del modelo transformado</span></span>
-<span id="cb32-2"><a href="predicciones.html#cb32-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(hwt), <span class="at">main =</span> <span class="st">&quot;Modelo Holt-Winters - Serie Transformada&quot;</span>,</span>
-<span id="cb32-3"><a href="predicciones.html#cb32-3" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Valores Transformados&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Tiempo&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="predicciones.html#cb33-1" tabindex="-1"></a><span class="co"># Gráfico del modelo transformado</span></span>
+<span id="cb33-2"><a href="predicciones.html#cb33-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(hwt), <span class="at">main =</span> <span class="st">&quot;Modelo Holt-Winters - Serie Transformada&quot;</span>,</span>
+<span id="cb33-3"><a href="predicciones.html#cb33-3" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Valores Transformados&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Tiempo&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="predicciones.html#cb33-1" tabindex="-1"></a><span class="co"># Restaurar configuración gráfica</span></span>
-<span id="cb33-2"><a href="predicciones.html#cb33-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="predicciones.html#cb34-1" tabindex="-1"></a><span class="co"># Restaurar configuración gráfica</span></span>
+<span id="cb34-2"><a href="predicciones.html#cb34-2" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
 <ul>
 <li><p>Observed (Observada): La serie con el modelo Holt Winters presenta variaciones, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.</p></li>
 <li><p>Trend (Tendencia): La tendencia es irregular, pero revela periodos de aumento y disminución del ausentismo a lo largo del tiempo. Se observan tramos donde el nivel general de ausentismo se incrementa al inicio de la semana y antes del fin de semana</p></li>
@@ -308,24 +314,47 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="predicción-próximos-7-días" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> Predicción próximos 7 días<a href="predicciones.html#predicción-próximos-7-días" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A continuación se genera una predicción para los siguientes siete días usando los resultados del modelo.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="predicciones.html#cb34-1" tabindex="-1"></a><span class="co">#Se realiza una predicion para los proximos 7 días</span></span>
-<span id="cb34-2"><a href="predicciones.html#cb34-2" tabindex="-1"></a>pred<span class="ot">=</span><span class="fu">predict</span>(hw, <span class="dv">7</span>, <span class="at">prediction.interval =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb34-3"><a href="predicciones.html#cb34-3" tabindex="-1"></a>pred</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="predicciones.html#cb35-1" tabindex="-1"></a><span class="co">#Se realiza una predicion para los proximos 7 días</span></span>
+<span id="cb35-2"><a href="predicciones.html#cb35-2" tabindex="-1"></a>pred<span class="ot">=</span><span class="fu">predict</span>(hwt, <span class="dv">30</span>, <span class="at">prediction.interval =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb35-3"><a href="predicciones.html#cb35-3" tabindex="-1"></a>pred</span></code></pre></div>
 <pre><code>## Time Series:
 ## Start = c(53, 2) 
-## End = c(54, 1) 
+## End = c(57, 3) 
 ## Frequency = 7 
-##                 fit      upr       lwr
-## 53.14286 27.4334029 74.75449 -19.88768
-## 53.28571 16.6943222 64.10558 -30.71693
-## 53.42857  8.5784673 56.08471 -38.92778
-## 53.57143 10.6400895 58.24624 -36.96606
-## 53.71429 -0.8931247 46.81796 -48.60421
-## 53.85714 -0.9199175 46.90122 -48.74106
-## 54.00000 26.4335818 74.37000 -21.50283</code></pre>
+##                fit      upr         lwr
+## 53.14286  2.217053 4.329039  0.10506720
+## 53.28571  2.137886 4.256896  0.01887479
+## 53.42857  1.289444 3.416315 -0.83742771
+## 53.57143  1.876250 4.011858 -0.25935700
+## 53.71429 -1.021274 1.123984 -3.16653138
+## 53.85714 -1.034491 1.121368 -3.19035013
+## 54.00000  1.899755 4.067201 -0.26769154
+## 54.14286  2.144527 4.360334 -0.07127882
+## 54.28571  2.065360 4.294602 -0.16388245
+## 54.42857  1.216918 3.460660 -1.02682420
+## 54.57143  1.803725 4.063056 -0.45560680
+## 54.71429 -1.093800 1.182235 -3.36983404
+## 54.85714 -1.107017 1.186856 -3.40089017
+## 55.00000  1.827229 4.140096 -0.48563812
+## 55.14286  2.072002 4.445352 -0.30134894
+## 55.28571  1.992834 4.387178 -0.40150969
+## 55.42857  1.144392 3.560915 -1.27213122
+## 55.57143  1.731199 4.171099 -0.70870095
+## 55.71429 -1.166325 1.298157 -3.63080742
+## 55.85714 -1.179543 1.310735 -3.66981989
+## 56.00000  1.754703 4.271993 -0.76258655
+## 56.14286  1.999476 4.588301 -0.58934908
+## 56.28571  1.920309 4.538100 -0.69748314
+## 56.42857  1.071866 3.719836 -1.57610343
+## 56.57143  1.658673 4.338031 -1.02068490
+## 56.71429 -1.238851 1.473102 -3.95080425
+## 56.85714 -1.252068 1.493683 -3.99781948
+## 57.00000  1.682177 4.462923 -1.09856825
+## 57.14286  1.926950 4.788769 -0.93486836
+## 57.28571  1.847783 4.746389 -1.05082296</code></pre>
 <p>Para finalizar se hace una visualización de los resultados obtenidos.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="predicciones.html#cb36-1" tabindex="-1"></a><span class="co">#se visualizan los valores pronosticados para los proximos 7 dias</span></span>
-<span id="cb36-2"><a href="predicciones.html#cb36-2" tabindex="-1"></a><span class="fu">plot</span>(hw,pred)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="predicciones.html#cb37-1" tabindex="-1"></a><span class="co">#se visualizan los valores pronosticados para los proximos 7 dias</span></span>
+<span id="cb37-2"><a href="predicciones.html#cb37-2" tabindex="-1"></a><span class="fu">plot</span>(hwt,pred)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <p>En este último gráfico se observa en negro la serie real y en rojo la previsto, la barra punteada es la ventana pronosticada para los próximos 7 días. Al trazar cada pronóstico, se puede ver que el método de Holt muestra claramente la captura de un componente de tendencia.</p>
 </div>

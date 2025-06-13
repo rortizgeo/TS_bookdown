@@ -27,14 +27,14 @@ Para analizar el comportamiento de los datos se intenta realizar una transformac
 
 En ese sentido, se debe recurrir a otro tipo de transformación que no genere modificaciones profundas en los datos, para ello, se hace uso de una técnica
 
-```{r, warning=FALSE, echo=FALSE}
+```{r, warning=FALSE}
 
 # Versión optimizada (encontrar c óptimo)
 c_opt <- min(ts_diaria[ts_diaria > 0])/2  # Mitad del valor mínimo positivo
 ts_transf <- log(ts_diaria + c_opt)
 
 #Se usa funcion logaritmica para visualizar los datos
-plot(log(ts_transf))
+plot(ts_transf, main = "Serie transformada con log")
 ```
 
 Una desventaja de esta transformación es que puede crear un "hueco" artificial entre los ceros transformados y los valores pequeños positivos como se muestra en el gráfico. Adicionalmente, los coeficientes en modelos ajustados a datos transformados requieren interpretación cuidadosa.  Sin embargo estos "huecos" son una representación fiel de la discontinuidad matemática entre cero y valores positivos, además de un indicador visual de la presencia de ceros en los datos originales que puede ser una propiedad deseable en muchos casos, ya que marca claramente la diferencia entre "cero" y "casi cero".
@@ -95,14 +95,14 @@ A continuación se genera una predicción para los siguientes siete días usando
 
 ```{r}
 #Se realiza una predicion para los proximos 7 días
-pred=predict(hw, 7, prediction.interval = TRUE)
+pred=predict(hwt, 30, prediction.interval = TRUE)
 pred
 ```
 Para finalizar se hace una visualización de los resultados obtenidos. 
 
 ```{r}
 #se visualizan los valores pronosticados para los proximos 7 dias
-plot(hw,pred)
+plot(hwt,pred)
 ```
 
 En este último gráfico se observa en negro la serie real y en rojo la previsto, la barra punteada  es la ventana pronosticada para los próximos 7 días. Al trazar cada pronóstico, se puede ver que el método de Holt muestra claramente la captura de un componente de tendencia.

@@ -23,7 +23,7 @@
 <meta name="author" content="Ricardo Ortiz; Jaime Martinez, Jeisson Rodriguez" />
 
 
-<meta name="date" content="2025-06-08" />
+<meta name="date" content="2025-06-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -796,23 +796,28 @@ Absenteeism.time.in.hours
 <pre><code>## `geom_smooth()` using formula = &#39;y ~ x&#39;</code></pre>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>En estos gráficos podemos observar que los puntos son caóticos o dispersos en todos los rezagos, no hay dependencia fuerte en el rezago, es decir no hay mucha relación entre el valor actual y el pasado.</p>
-<p>vamos a graficar la <em>Autocorrelation Function (ACF)</em>, esto mide cuánta correlación existe entre la serie y sus propios rezagos.</p>
+<p>La ACF o Función de Autocorrelación (Autocorrelation Function) es una herramienta estadística utilizada para medir la correlación que existe entre una serie temporal y sus valores en distintos rezagos o lags. En otras palabras, nos dice qué tan relacionado está el valor actual de una serie con sus valores pasados.</p>
+<p>Vamos a graficar la <em>Autocorrelation Function (ACF)</em> para el caso del ausentismo laboral que representa en el eje X los distintos rezagos (lags) y en el eje Y la autocorrelación para el rezago​, que va de -1 a 1.</p>
+<ul>
+<li><p>Barras altas y significativas: indican autocorrelación fuerte en ese rezago.</p></li>
+<li><p>Líneas azules (límites de significancia): indican el intervalo donde la autocorrelación es estadísticamente insignificante (generalmente con un nivel de confianza del 95%). Si una barra sobresale de esas líneas, la autocorrelación es significativa.</p></li>
+</ul>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="análisis-de-los-datos.html#cb10-1" tabindex="-1"></a><span class="fu">acf</span>(datos<span class="sc">$</span>Absenteeism.time.in.hours, <span class="at">na.action =</span> na.pass, <span class="at">main =</span> <span class="st">&quot;ACF - Autocorrelación de ausencias&quot;</span>)</span></code></pre></div>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<p>A partir del resultado del gráfico se interprta que no hay correlaciones significativas en los rezagos.</p>
+<p>A partir del resultado del gráfico se interpreta que no hay correlaciones significativas en los rezagos evaluandose para un periodo de 30 días (Equivalente a un mes).</p>
 </div>
 <div id="análísis-de-estacionalidad" class="section level2 hasAnchor" number="2.3">
 <h2><span class="header-section-number">2.3</span> Análísis de estacionalidad<a href="análisis-de-los-datos.html#análísis-de-estacionalidad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>La estacionalidad es un patrón repetitivo o cíclico que ocurre a intervalos regulares en una serie de tiempo, como cada semana, cada mes o cada año.</p>
-<p>En este caso, queremos ver si hay momentos del año (o del mes) en los que el ausentismo tiende a aumentar o disminuir sistemáticamente.Como en el conjunto de datos tenemos el mes (simulado con fechas) y las horas de ausentismo, podemos ver si ciertos meses muestran mayores ausencias que otros.</p>
+<p>En este caso, queremos ver si hay momentos del año (o del mes) en los que el ausentismo tiende a aumentar o disminuir sistemáticamente. Como en el conjunto de datos tenemos el mes (simulado con fechas) y las horas de ausentismo, podemos ver si ciertos meses muestran mayores ausencias que otros.</p>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p><img src="bookdown-demo_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<p>El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales. Sin embargo, al hacer el análisis semanal si parece observarse una tendencia de mayor ausentismo en los primeros días de la semana luego del fin de semana.</p>
+<p>El análisis de la estacionalidad mostró que el ausentismo laboral no presenta variaciones cíclicas fuertes a lo largo del año. Aunque se observan ligeras variaciones en algunos meses que coinciden con la semana santa, las vacaciones de mitad de año y las vacaciones de Diciembre en los calendarios escoales. Sin embargo, no se identificaron patrones claros que indiquen un comportamiento estacional robusto. Esto sugiere que el ausentismo registrado responde más a factores puntuales que a eventos recurrentes en el tiempo, lo cual limita la capacidad predictiva basada en componentes estacionales. Sin embargo, al hacer el análisis semanal si parece observarse una tendencia de mayor ausentismo en los primeros días de la semana luego del fin de semana.</p>
 <p>Para abordar esta sección del documento sobre análisis de series temporales con base en el conjunto de datos de ausentismo laboral de la UCI, ahora se evalurán otros análisis como la descomposición, estacionariedad y si es necesario se aplicarán las transformaciones necesarias.</p>
 </div>
 <div id="descomposición-de-la-serie-temporal" class="section level2 hasAnchor" number="2.4">
 <h2><span class="header-section-number">2.4</span> Descomposición de la serie temporal<a href="análisis-de-los-datos.html#descomposición-de-la-serie-temporal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Cualqier serie se puede descomponer en su parte estacional, de tendencia y residual. Exiten dos alternativas, una descomposición por adición y multiplicativa. Para ello usaremos la función descompose.</p>
+<p>Cualquier serie se puede descomponer en su parte estacional, de tendencia y residual. Exiten dos alternativas, una descomposición por adición y multiplicativa. Para ello usaremos la función descompose.</p>
 <p>En un modelo aditivo, la serie temporal se descompone en:</p>
 <ul>
 <li><p>Tendencia (Trend): Refleja la dirección general del ausentismo a largo plazo (ej.: aumento o disminución progresiva).</p></li>
@@ -851,8 +856,8 @@ Absenteeism.time.in.hours
 <span id="cb13-3"><a href="análisis-de-los-datos.html#cb13-3" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="análisis-de-los-datos.html#cb13-4" tabindex="-1"></a><span class="co"># Graficar resultado</span></span>
 <span id="cb13-5"><a href="análisis-de-los-datos.html#cb13-5" tabindex="-1"></a><span class="fu">plot</span>(descomp)</span></code></pre></div>
-<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" />
-A continuación se analizan los resultados obtenidos en el gráfico de descomposición de la serie temporal que representa, en el eje <em>x</em>, el índice temporal de observación, que en este caso es semanal (es decir, cada punto es una semana del año). El eje <em>y</em> representa el número total de horas de ausentismos laboral por semana que llegan a alcanzar hasta las 150 semanas, indicando semanas con alta acumulación de horas de ausencia.</p>
+<p><img src="bookdown-demo_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>A continuación se analizan los resultados obtenidos en el gráfico de descomposición de la serie temporal que representa, en el eje <em>x</em>, el índice temporal de observación, que en este caso es semanal (es decir, cada punto es una semana del año). El eje <em>y</em> representa el número total de horas de ausentismos laboral por semana que llegan a alcanzar hasta las 150 horas, indicando semanas con alta acumulación de horas de ausencia.</p>
 <p><em>Observed (Observada)</em>:
 La serie original presenta variaciones notables, con múltiples picos que podrían corresponder a eventos puntuales de alto ausentismo. La serie muestra fluctuaciones regulares, lo que sugiere la presencia de estacionalidad y posiblemente una leve tendencia.</p>
 <p><em>Trend (Tendencia)</em>:
